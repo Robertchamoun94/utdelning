@@ -10,7 +10,7 @@ export interface Stock {
   countryLabel: string;
   flag: string;
 
-  market: MarketSegment;
+  market: string;
   sector: string;
 
   currency: "SEK";
