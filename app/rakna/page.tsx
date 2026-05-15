@@ -12,34 +12,39 @@ function formatSek(value: number) {
 }
 
 export default function RaknaPage() {
-  const [startCapital, setStartCapital] = useState(100000);
-  const [monthlySaving, setMonthlySaving] = useState(5000);
-  const [returnRate, setReturnRate] = useState(10);
-  const [years, setYears] = useState(20);
+  const [startCapital, setStartCapital] = useState<number | "">(100000);
+  const [monthlySaving, setMonthlySaving] = useState<number | "">(5000);
+  const [returnRate, setReturnRate] = useState<number | "">(10);
+  const [years, setYears] = useState<number | "">(20);
+
+  const startCapitalValue = startCapital === "" ? 0 : startCapital;
+  const monthlySavingValue = monthlySaving === "" ? 0 : monthlySaving;
+  const returnRateValue = returnRate === "" ? 0 : returnRate;
+  const yearsValue = years === "" ? 0 : years;
 
   const data = useMemo(() => {
     const chart = [];
-    let invested = startCapital;
-    let saved = startCapital;
+    let invested = startCapitalValue;
+    let saved = startCapitalValue;
 
-    for (let year = 0; year <= years; year++) {
+    for (let year = 0; year <= yearsValue; year++) {
       chart.push({
         year,
         invested: Math.round(invested),
         saved: Math.round(saved),
       });
 
-      invested = invested * (1 + returnRate / 100) + monthlySaving * 12;
-      saved += monthlySaving * 12;
+      invested = invested * (1 + returnRateValue / 100) + monthlySavingValue * 12;
+      saved += monthlySavingValue * 12;
     }
 
     return chart;
-  }, [startCapital, monthlySaving, returnRate, years]);
+  }, [startCapitalValue, monthlySavingValue, returnRateValue, yearsValue]);
 
-  const finalInvested = data[data.length - 1].invested;
-  const finalSaved = data[data.length - 1].saved;
+  const finalInvested = data[data.length - 1]?.invested ?? 0;
+  const finalSaved = data[data.length - 1]?.saved ?? 0;
   const difference = finalInvested - finalSaved;
-  const totalDeposits = startCapital + monthlySaving * 12 * years;
+  const totalDeposits = startCapitalValue + monthlySavingValue * 12 * yearsValue;
 
   return (
     <main className="h-dvh overflow-hidden bg-slate-100 text-slate-950">
@@ -130,7 +135,7 @@ export default function RaknaPage() {
 
             <aside className="hidden rounded-xl border border-slate-200 bg-white p-4 shadow-sm lg:block">
               <h2 className="text-base font-black">
-                Resultat efter {years} år
+                Resultat efter {yearsValue} år
               </h2>
 
               <div className="mt-5 space-y-4">
@@ -152,7 +157,7 @@ export default function RaknaPage() {
 
                 <ResultLine
                   label="Genomsnittlig avkastning"
-                  value={`${returnRate.toLocaleString("sv-SE")} %/år`}
+                  value={`${returnRateValue.toLocaleString("sv-SE")} %/år`}
                 />
               </div>
             </aside>
@@ -183,7 +188,7 @@ export default function RaknaPage() {
 
             <div className="hidden rounded-xl border border-slate-200 bg-white px-3 py-2.5 shadow-sm lg:col-span-2 lg:block">
               <p className="text-xs text-slate-500">
-                Skillnad efter {years} år
+                Skillnad efter {yearsValue} år
               </p>
 
               <p className="mt-0.5 text-lg font-black text-emerald-600">
@@ -207,8 +212,8 @@ function InputRow({
 }: {
   label: string;
   suffix: string;
-  value: number;
-  onChange: (value: number) => void;
+  value: number | "";
+  onChange: (value: number | "") => void;
 }) {
   return (
     <label className="flex items-center justify-between gap-2 lg:block">
@@ -219,8 +224,12 @@ function InputRow({
       <div className="flex h-7 w-[120px] items-center rounded-md border border-slate-200 bg-white px-2 lg:mt-1 lg:h-10 lg:w-full lg:rounded-lg lg:px-3">
         <input
           type="number"
-          value={value}
-          onChange={(e) => onChange(Number(e.target.value))}
+          inputMode="decimal"
+          value={value === "" ? "" : value}
+          onChange={(e) => {
+            const nextValue = e.target.value;
+            onChange(nextValue === "" ? "" : Number(nextValue));
+          }}
           className="w-full bg-transparent text-right text-[11px] font-bold text-slate-950 outline-none lg:text-left lg:text-base"
         />
 

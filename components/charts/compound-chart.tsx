@@ -92,17 +92,32 @@ export function CompoundChart({ data }: CompoundChartProps) {
   );
 
   const maxYear = data[data.length - 1]?.year ?? 20;
-  const ticks = isMobile ? [0, Math.round(maxYear / 2), maxYear] : data.map((item) => item.year);
+  const desktopStep = maxYear <= 10 ? 2 : maxYear <= 20 ? 5 : 10;
+  const desktopTicks = Array.from(
+    { length: Math.floor(maxYear / desktopStep) + 1 },
+    (_, index) => index * desktopStep
+  );
+
+  if (!desktopTicks.includes(maxYear)) {
+    desktopTicks.push(maxYear);
+  }
+
+  const mobileTicks = Array.from(
+    new Set([0, Math.round(maxYear / 2), maxYear])
+  );
+
+  const ticks = isMobile ? mobileTicks : desktopTicks;
 
   if (!mounted) {
     return <div className="h-full w-full" />;
   }
 
   return (
-    <div className="h-full w-full">
+    <div className="h-full w-full outline-none [&_*]:outline-none">
       <ResponsiveContainer width="100%" height="100%">
         <LineChart
           data={data}
+          accessibilityLayer={false}
           margin={{
             top: isMobile ? 6 : 12,
             right: isMobile ? 12 : 28,
@@ -119,7 +134,7 @@ export function CompoundChart({ data }: CompoundChartProps) {
             tick={{ fontSize: isMobile ? 9 : 11 }}
             axisLine={false}
             tickLine={false}
-            tickFormatter={(value) => `${value} år`}
+            tickFormatter={(value) => `${value}`}
           />
 
           <YAxis
