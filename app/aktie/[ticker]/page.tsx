@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { ArrowLeft } from "lucide-react";
 import type { Metadata } from "next";
 import { dividends } from "@/data/dividends";
+import { stockContent } from "@/data/stock-content";
 import { MobileBottomNav } from "@/components/layout/mobile-bottom-nav";
 import { Topbar } from "@/components/layout/topbar";
 import type { Dividend } from "@/types/dividend";
@@ -108,6 +109,7 @@ export default async function AktiePage({
   const { ticker } = await params;
   const stockEvents = getStockEvents(ticker);
   const stock = stockEvents[0];
+  const content = stockContent[ticker];
 
   if (!stock) {
     notFound();
@@ -156,11 +158,14 @@ export default async function AktiePage({
               </div>
             </div>
 
-            <p className="mt-5 max-w-3xl text-sm leading-6 text-slate-600 lg:text-base">
-              Här hittar du kommande utdelning för {stock.company}, inklusive
-              X-datum och utdelningsbelopp. Informationen används för att snabbt
-              se när aktien handlas utan rätt till utdelning.
-            </p>
+            <div className="mt-5 max-w-3xl space-y-3 text-sm leading-6 text-slate-600 lg:text-base">
+  <p>
+    {content?.description ??
+      `Här hittar du kommande utdelning för ${stock.company}, inklusive X-datum och utdelningsbelopp. Informationen används för att snabbt se när aktien handlas utan rätt till utdelning.`}
+  </p>
+
+  {content?.dividendComment && <p>{content.dividendComment}</p>}
+</div>
           </div>
 
           <div className="grid gap-3 p-4 lg:grid-cols-3 lg:p-8">
@@ -200,6 +205,17 @@ export default async function AktiePage({
                 du normalt äga aktien innan X-datum.
               </p>
             </div>
+            {content?.businessModel && (
+  <div className="mt-6 rounded-xl border border-slate-200 bg-white p-4">
+    <h2 className="text-base font-black">
+      Om {stock.company}
+    </h2>
+
+    <p className="mt-2 text-sm leading-6 text-slate-600">
+      {content.businessModel}
+    </p>
+  </div>
+)}
           </div>
         </div>
       </section>
