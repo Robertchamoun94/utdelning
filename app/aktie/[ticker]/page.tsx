@@ -110,6 +110,36 @@ export default async function AktiePage({
   const stockEvents = getStockEvents(ticker);
   const stock = stockEvents[0];
   const content = stockContent[ticker];
+  const faqSchema = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  mainEntity: [
+    {
+      "@type": "Question",
+      name: `När är X-datum för ${stock.company}?`,
+      acceptedAnswer: {
+        "@type": "Answer",
+        text: `X-datum för ${stock.company} är dagen då aktien handlas utan rätt till kommande utdelning. För att ha rätt till utdelningen behöver aktien normalt ägas innan X-datum.`,
+      },
+    },
+    {
+      "@type": "Question",
+      name: `Hur fungerar utdelningen i ${stock.company}?`,
+      acceptedAnswer: {
+        "@type": "Answer",
+        text: `Utdelningen i ${stock.company} beslutas vanligtvis av bolagsstämman och påverkas av bolagets lönsamhet, kassaflöde och framtida kapitalbehov.`,
+      },
+    },
+    {
+      "@type": "Question",
+      name: `Vad påverkar utdelningen i ${stock.company}?`,
+      acceptedAnswer: {
+        "@type": "Answer",
+        text: `Utdelningsnivån påverkas bland annat av bolagets resultat, kassaflöde, investeringar, skuldsättning och styrelsens kapitalallokering.`,
+      },
+    },
+  ],
+};
 
   if (!stock) {
     notFound();
@@ -216,11 +246,60 @@ export default async function AktiePage({
     </p>
   </div>
 )}
+<div className="mt-6 rounded-xl border border-slate-200 bg-white p-5">
+  <h2 className="text-lg font-black">
+    Vanliga frågor om {stock.company}
+  </h2>
+
+  <div className="mt-4 space-y-5">
+    <div>
+      <h3 className="font-semibold">
+        När är X-datum för {stock.company}?
+      </h3>
+
+      <p className="mt-1 text-sm leading-6 text-slate-600">
+        X-datum för {stock.company} är dagen då aktien handlas utan rätt
+        till kommande utdelning. För att ha rätt till utdelningen behöver
+        aktien normalt ägas innan X-datum.
+      </p>
+    </div>
+
+    <div>
+      <h3 className="font-semibold">
+        Hur fungerar utdelningen i {stock.company}?
+      </h3>
+
+      <p className="mt-1 text-sm leading-6 text-slate-600">
+        Utdelningen i {stock.company} beslutas vanligtvis av bolagsstämman
+        och påverkas av bolagets lönsamhet, kassaflöde och framtida
+        kapitalbehov.
+      </p>
+    </div>
+
+    <div>
+      <h3 className="font-semibold">
+        Vad påverkar utdelningen i {stock.company}?
+      </h3>
+
+      <p className="mt-1 text-sm leading-6 text-slate-600">
+        Utdelningsnivån påverkas bland annat av bolagets resultat,
+        kassaflöde, investeringar, skuldsättning och styrelsens beslut
+        kring kapitalallokering.
+      </p>
+    </div>
+  </div>
+</div>
           </div>
         </div>
       </section>
 
       <MobileBottomNav />
+      <script
+  type="application/ld+json"
+  dangerouslySetInnerHTML={{
+    __html: JSON.stringify(faqSchema),
+  }}
+/>
     </main>
   );
 }
