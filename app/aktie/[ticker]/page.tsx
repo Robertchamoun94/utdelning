@@ -4,6 +4,7 @@ import { ArrowLeft } from "lucide-react";
 import type { Metadata } from "next";
 import { dividends } from "@/data/dividends";
 import { stockContent } from "@/data/stock-content";
+import { relatedStocks } from "@/data/related-stocks";
 import { MobileBottomNav } from "@/components/layout/mobile-bottom-nav";
 import { Topbar } from "@/components/layout/topbar";
 import type { Dividend } from "@/types/dividend";
@@ -110,6 +111,7 @@ export default async function AktiePage({
   const stockEvents = getStockEvents(ticker);
   const stock = stockEvents[0];
   const content = stockContent[ticker];
+  const related = relatedStocks[ticker] ?? [];
   const faqSchema = {
   "@context": "https://schema.org",
   "@type": "FAQPage",
@@ -253,6 +255,28 @@ export default async function AktiePage({
 
   <div className="mt-4 space-y-5">
     <div>
+      {related.length > 0 && (
+  <div className="mt-6 rounded-xl border border-slate-200 bg-white p-5">
+    <h2 className="text-lg font-black">
+      Liknande utdelningsaktier
+    </h2>
+
+    <div className="mt-4 flex flex-wrap gap-3">
+      {related.map((slug) => (
+        <Link
+          key={slug}
+          href={`/aktie/${slug}`}
+          className="rounded-full border border-slate-200 px-4 py-2 text-sm font-semibold transition hover:bg-slate-100"
+        >
+          {slug
+            .split("-")
+            .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
+            .join(" ")}
+        </Link>
+      ))}
+    </div>
+  </div>
+)}
       <h3 className="font-semibold">
         När är X-datum för {stock.company}?
       </h3>
