@@ -5,6 +5,7 @@ import type { Metadata } from "next";
 import { dividends } from "@/data/dividends";
 import { stockContent } from "@/data/stock-content";
 import { relatedStocks } from "@/data/related-stocks";
+import { stockYields } from "@/data/stock-yields";
 import { MobileBottomNav } from "@/components/layout/mobile-bottom-nav";
 import { Topbar } from "@/components/layout/topbar";
 import type { Dividend } from "@/types/dividend";
@@ -36,6 +37,28 @@ function formatAmount(amount: number, currency: string) {
     maximumFractionDigits: amount < 1 ? 3 : 2,
   })} ${currency}`;
 }
+
+function getStockYield(slug: string) {
+  const yieldAliases: Record<string, string> = {
+    "h-and-m-b": "hochm-b",
+  };
+
+  return stockYields[slug] ?? stockYields[yieldAliases[slug]];
+}
+
+function formatDividendYield(slug: string) {
+  const stockYield = getStockYield(slug);
+
+  if (!stockYield) {
+    return "—";
+  }
+
+  return `${stockYield.dividendYield.toLocaleString("sv-SE", {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  })} %`;
+}
+
 
 function isLogoUrl(logo: string) {
   return logo.startsWith("http");
@@ -77,7 +100,7 @@ export async function generateMetadata({
   }
 
   const title = `${stock.company} utdelning 2026 – X-datum och belopp | Utdelning.nu`;
-  const description = `Se ${stock.company} utdelning 2026. Här hittar du X-datum, utdelningsbelopp, valuta och kommande utdelningar för ${stock.ticker}.`;
+  const description = `Se ${stock.company} utdelning 2026. Här hittar du X-datum, utdelningsbelopp, direktavkastning och kommande utdelningar för ${stock.ticker}.`;
   const url = `/aktie/${ticker}`;
 
   return {
@@ -112,6 +135,7 @@ export default async function AktiePage({
   const stock = stockEvents[0];
   const content = stockContent[ticker];
   const related = relatedStocks[ticker] ?? [];
+  const dividendYield = formatDividendYield(ticker);
   const faqSchema = {
   "@context": "https://schema.org",
   "@type": "FAQPage",
@@ -203,7 +227,7 @@ export default async function AktiePage({
           <div className="grid gap-3 p-4 lg:grid-cols-3 lg:p-8">
             <InfoCard label="Nästa X-datum" value={formatDate(stock.xDate)} green />
             <InfoCard label="Utdelning per aktie" value={formatAmount(stock.amount, stock.currency)} />
-            <InfoCard label="Valuta" value={stock.currency} />
+            <InfoCard label="Direktavkastning" value={dividendYield} green={dividendYield !== "—"} />
           </div>
 
           <div className="border-t border-slate-200 p-4 lg:p-8">

@@ -1,5 +1,6 @@
 import Link from "next/link";
 import type { Dividend } from "@/types/dividend";
+import { stockYields } from "@/data/stock-yields";
 
 interface DividendTableProps {
   dividends: Dividend[];
@@ -34,6 +35,30 @@ export function createStockSlug(value: string) {
     .replace(/[^a-z0-9]+/g, "-")
     .replace(/^-+|-+$/g, "");
 }
+
+function getStockYield(company: string) {
+  const slug = createStockSlug(company);
+
+  const yieldAliases: Record<string, string> = {
+    "h-and-m-b": "hochm-b",
+  };
+
+  return stockYields[slug] ?? stockYields[yieldAliases[slug]];
+}
+
+function formatDividendYield(company: string) {
+  const stockYield = getStockYield(company);
+
+  if (!stockYield) {
+    return "—";
+  }
+
+  return `${stockYield.dividendYield.toLocaleString("sv-SE", {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  })} %`;
+}
+
 
 function StockLogo({ dividend }: { dividend: Dividend }) {
   return (
@@ -143,6 +168,10 @@ export function DividendTable({ dividends }: DividendTableProps) {
                   Aktie
                 </th>
 
+                <th className="hidden w-[130px] px-2 py-2 text-[10px] font-bold uppercase text-slate-500 sm:table-cell lg:w-[170px] lg:px-4 lg:py-3 lg:text-sm">
+                  Direktavk.
+                </th>
+
                 <th className="w-[96px] px-2 py-2 text-right text-[10px] font-bold uppercase text-slate-500 lg:w-[180px] lg:px-4 lg:py-3 lg:text-left lg:text-sm">
                   Utdelning
                 </th>
@@ -184,7 +213,23 @@ export function DividendTable({ dividends }: DividendTableProps) {
                           <div className="truncate text-[10px] font-medium leading-tight text-slate-400 lg:text-xs">
                             {dividend.ticker}
                           </div>
+
+                          <div className="mt-1 w-fit rounded-full bg-emerald-50 px-1.5 py-0.5 text-[9px] font-black text-emerald-700 sm:hidden">
+  Direkt avkastning: {formatDividendYield(dividend.company)}
+</div>
                         </div>
+                      </Link>
+                    </td>
+
+                    <td className="hidden whitespace-nowrap px-2 py-2 sm:table-cell lg:px-4 lg:py-3">
+                      <Link
+                        href={href}
+                        aria-label={`Visa aktiesida för ${dividend.company}`}
+                        className="block cursor-pointer rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-400 focus:ring-offset-2"
+                      >
+                        <span className="rounded-full bg-emerald-50 px-2 py-1 text-[11px] font-black text-emerald-700 transition group-hover:bg-emerald-100 group-hover:shadow-sm lg:px-3 lg:py-1.5 lg:text-base">
+                          {formatDividendYield(dividend.company)}
+                        </span>
                       </Link>
                     </td>
 
