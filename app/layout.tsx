@@ -1,3 +1,6 @@
+import { Footer } from "@/components/layout/footer";
+import { MobileMenu } from "@/components/layout/mobile-menu";
+import { CookieBanner } from "@/components/cookie-banner";
 import type { Metadata } from "next";
 import Script from "next/script";
 import "./globals.css";
@@ -81,6 +84,9 @@ export default function RootLayout({
 
       <body className="min-h-full flex flex-col">
         {children}
+        <Footer />
+  <MobileMenu />
+        <CookieBanner />
       </body>
     </html>
   );
