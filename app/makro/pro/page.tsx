@@ -722,19 +722,20 @@ export default function MakroProPage() {
 
           <div className="mt-5 grid gap-4">
             <MacroAccordion
-              title="Snabb Makro"
-              badge="Veckovis"
-              description="Snabb makro består av indikatorer som rör sig relativt snabbt och kan hjälpa till att fånga förändringar i marknadens riskaptit tidigare. Syftet är att snabbare kunna tolka om marknaden börjar prisa in förbättring, stress eller ett skifte i likviditet och momentum."
-              indicators={snabbIndicators}
-          
-            />
+  title="Snabb Makro"
+  badge="Veckovis"
+  count={14}
+  description="Snabb makro består av indikatorer som rör sig relativt snabbt och kan hjälpa till att fånga förändringar i marknadens riskaptit tidigare. Syftet är att snabbare kunna tolka om marknaden börjar prisa in förbättring, stress eller ett skifte i likviditet och momentum."
+  indicators={snabbIndicators}
+/>
 
-            <MacroAccordion
-              title="Lagg Makro"
-              badge="Månadsvis"
-              description="Laggande makro visar den bredare ekonomiska bilden genom data som ofta bekräftar konjunkturläget i efterhand. Den hjälper till att bedöma om tillväxt, inflation, arbetsmarknad, riskstress och policy stödjer eller motverkar börsens riktning."
-              indicators={laggIndicators}
-            />
+<MacroAccordion
+  title="Lagg Makro"
+  badge="Månadsvis"
+  count={36}
+  description="Laggande makro visar den bredare ekonomiska bilden genom data som ofta bekräftar konjunkturläget i efterhand. Den hjälper till att bedöma om tillväxt, inflation, arbetsmarknad, riskstress och policy stödjer eller motverkar börsens riktning."
+  indicators={laggIndicators}
+/>
           </div>
         </div>
 
@@ -770,12 +771,14 @@ export default function MakroProPage() {
 function MacroAccordion({
   title,
   badge,
+  count,
   description,
   indicators,
   defaultOpen = false,
 }: {
   title: string;
   badge: string;
+  count: number;
   description: string;
   indicators: {
     category?: string;
@@ -802,8 +805,8 @@ function MacroAccordion({
             </span>
           </div>
           <p className="mt-1 text-xs font-semibold text-slate-500">
-            Klicka för att visa indikatorer
-          </p>
+  Klicka för att visa {count} indikatorer
+</p>
         </div>
 
         <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-slate-950 text-lg font-black text-white transition group-open:rotate-45">
