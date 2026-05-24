@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Menu, Search } from "lucide-react";
+import { Search } from "lucide-react";
 
 interface TopbarProps {
   search?: string;
@@ -21,13 +21,15 @@ export function Topbar({ search = "", onSearchChange }: TopbarProps) {
       label: "Räkna avkastning",
       href: "/rakna",
     },
+    {
+      label: "Makro",
+      href: "/makro",
+    },
   ];
 
   return (
     <header className="h-14 border-b border-slate-800 bg-slate-950 lg:h-16">
-      <div className="mx-auto flex h-full max-w-[1520px] items-center justify-center lg:justify-between gap-4 px-4 lg:px-7">
-        
-
+      <div className="mx-auto flex h-full max-w-[1520px] items-center justify-center gap-4 px-4 lg:justify-between lg:px-7">
         <Link
           href="/"
           className="shrink-0 text-lg font-black tracking-tight lg:text-2xl"
@@ -38,7 +40,9 @@ export function Topbar({ search = "", onSearchChange }: TopbarProps) {
 
         <nav className="hidden min-w-0 flex-1 items-center gap-6 pl-10 lg:flex">
           {navItems.map((item) => {
-            const active = pathname === item.href;
+            const active =
+              pathname === item.href ||
+              (item.href === "/makro" && pathname.startsWith("/makro"));
 
             return (
               <Link
@@ -71,8 +75,6 @@ export function Topbar({ search = "", onSearchChange }: TopbarProps) {
             <Search size={18} className="text-slate-400" />
           </div>
         </div>
-
-        
       </div>
     </header>
   );

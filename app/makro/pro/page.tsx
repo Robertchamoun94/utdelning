@@ -1,6 +1,7 @@
 import Link from "next/link";
 import {
   ArrowLeft,
+  Lock,
   Gauge,
   LineChart,
   ShieldAlert,
@@ -20,6 +21,8 @@ export const metadata = {
   description:
     "Makro Pro visar makrostatus, ledande indikatorer, kreditstress, likviditet och entry-signaler samlat i en tydlig dashboard.",
 };
+
+const PATREON_URL = "https://www.patreon.com/utdelningnu";
 
 const summary = [
   {
@@ -459,7 +462,7 @@ export default function MakroProPage() {
         </Link>
 
         <div className="rounded-3xl border border-slate-800 bg-slate-950 p-5 text-white shadow-xl lg:p-8">
-          <div className="grid gap-6 lg:grid-cols-[1.1fr_0.9fr] lg:items-start">
+          <div className="grid gap-6 lg:grid-cols-[1.15fr_0.85fr] lg:items-start">
             <div>
               <div className="mb-3 inline-flex items-center gap-2 rounded-full border border-emerald-500/30 bg-emerald-500/10 px-3 py-1 text-xs font-black text-emerald-300">
                 <BarChart3 size={14} />
@@ -484,7 +487,8 @@ export default function MakroProPage() {
 </div>
             </div>
 
-            <details className="group overflow-hidden rounded-2xl border border-slate-800 bg-slate-900">
+            <div className="grid gap-4 lg:gap-5">
+            <details className="group overflow-hidden rounded-2xl border border-slate-800 bg-slate-900 lg:self-start">
               <summary className="flex cursor-pointer list-none items-center justify-between gap-3 p-5 transition hover:bg-slate-800/60">
                 <div>
                   <p className="text-xs font-bold uppercase text-slate-400">
@@ -513,7 +517,7 @@ export default function MakroProPage() {
 
               <div className="border-t border-slate-800 p-5">
                 <div className="grid gap-3">
-                  {marketStatus.map((text) => (
+                  {marketStatus.slice(0, 2).map((text) => (
                     <div
                       key={text}
                       className="flex gap-3 rounded-xl border border-slate-800 bg-slate-950 p-3"
@@ -528,11 +532,33 @@ export default function MakroProPage() {
                       </p>
                     </div>
                   ))}
+
+                  <div className="relative min-h-[260px] overflow-hidden rounded-xl border border-slate-800">
+                    <div className="pointer-events-none select-none space-y-3 p-3 blur-[2px] opacity-50">
+                      {marketStatus.slice(2).map((text) => (
+                        <div
+                          key={text}
+                          className="flex gap-3 rounded-xl border border-slate-800 bg-slate-950 p-3"
+                        >
+                          <CheckCircle2
+                            className="mt-0.5 shrink-0 text-emerald-400"
+                            size={18}
+                          />
+
+                          <p className="text-sm font-semibold leading-6 text-slate-200">
+                            {text}
+                          </p>
+                        </div>
+                      ))}
+                    </div>
+
+                    <DarkLockedOverlay count={marketStatus.length - 2} />
+                  </div>
                 </div>
               </div>
             </details>
 
-            <details className="group overflow-hidden rounded-2xl border border-slate-800 bg-slate-900">
+            <details className="group overflow-hidden rounded-2xl border border-slate-800 bg-slate-900 lg:self-start">
               <summary className="flex cursor-pointer list-none items-center justify-between gap-3 p-5 transition hover:bg-slate-800/60">
                 <div>
                   <p className="text-xs font-bold uppercase text-slate-400">
@@ -540,18 +566,18 @@ export default function MakroProPage() {
                   </p>
 
                   <h2 className="mt-1 whitespace-nowrap text-base font-black sm:text-xl">
-  Position & signaler
-</h2>
+                    Position & signaler
+                  </h2>
                 </div>
 
                 <div className="flex items-center gap-2">
                   <span className="inline-flex items-center gap-2 rounded-full bg-emerald-500/10 px-3 py-1 text-xs font-black text-emerald-300">
-  <span className="relative flex h-2 w-2">
-    <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75" />
-    <span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-400" />
-  </span>
-  Live
-</span>
+                    <span className="relative flex h-2 w-2">
+                      <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75" />
+                      <span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-400" />
+                    </span>
+                    Live
+                  </span>
 
                   <span className="flex h-9 w-9 items-center justify-center rounded-full bg-slate-950 text-lg font-black text-white transition group-open:rotate-45">
                     +
@@ -560,34 +586,39 @@ export default function MakroProPage() {
               </summary>
 
               <div className="border-t border-slate-800 p-5">
-                <div className="grid gap-3">
-                  {position.map((item) => {
-                    const Icon = item.icon;
+                <div className="relative min-h-[260px] overflow-hidden rounded-xl border border-slate-800">
+                  <div className="pointer-events-none select-none space-y-3 p-3 blur-[2px] opacity-50">
+                    {position.map((item) => {
+                      const Icon = item.icon;
 
-                    return (
-                      <div
-                        key={item.label}
-                        className="flex items-center gap-3 rounded-xl border border-slate-800 bg-slate-950 p-3"
-                      >
-                        <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-emerald-500/10 text-emerald-400">
-                          <Icon size={18} />
+                      return (
+                        <div
+                          key={item.label}
+                          className="flex items-center gap-3 rounded-xl border border-slate-800 bg-slate-950 p-3"
+                        >
+                          <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-emerald-500/10 text-emerald-400">
+                            <Icon size={18} />
+                          </div>
+
+                          <div className="min-w-0">
+                            <p className="text-xs font-bold text-slate-500">
+                              {item.label}
+                            </p>
+
+                            <p className="truncate text-sm font-black text-white">
+                              {item.value}
+                            </p>
+                          </div>
                         </div>
+                      );
+                    })}
+                  </div>
 
-                        <div className="min-w-0">
-                          <p className="text-xs font-bold text-slate-500">
-                            {item.label}
-                          </p>
-
-                          <p className="truncate text-sm font-black text-white">
-                            {item.value}
-                          </p>
-                        </div>
-                      </div>
-                    );
-                  })}
+                  <DarkLockedOverlay count={position.length} />
                 </div>
               </div>
             </details>
+            </div>
           </div>
         </div>
 
@@ -607,7 +638,7 @@ export default function MakroProPage() {
             </div>
 
             <div className="mt-6 w-full overflow-hidden">
-              <div className="w-full rounded-2xl bg-slate-50 p-3 sm:p-4">
+              <div className="mx-auto w-full rounded-2xl bg-slate-50 p-3 sm:p-4 lg:max-w-[1060px]">
                 <svg viewBox="0 0 720 320" className="h-auto w-full max-w-full">
                   {[40, 90, 140, 190, 240].map((y) => (
                     <line
@@ -725,6 +756,7 @@ export default function MakroProPage() {
   title="Snabb Makro"
   badge="Veckovis"
   count={14}
+  previewLimit={3}
   description="Snabb makro består av indikatorer som rör sig relativt snabbt och kan hjälpa till att fånga förändringar i marknadens riskaptit tidigare. Syftet är att snabbare kunna tolka om marknaden börjar prisa in förbättring, stress eller ett skifte i likviditet och momentum."
   indicators={snabbIndicators}
 />
@@ -733,6 +765,7 @@ export default function MakroProPage() {
   title="Lagg Makro"
   badge="Månadsvis"
   count={36}
+  previewLimit={3}
   description="Laggande makro visar den bredare ekonomiska bilden genom data som ofta bekräftar konjunkturläget i efterhand. Den hjälper till att bedöma om tillväxt, inflation, arbetsmarknad, riskstress och policy stödjer eller motverkar börsens riktning."
   indicators={laggIndicators}
 />
@@ -756,9 +789,14 @@ export default function MakroProPage() {
               </p>
             </div>
 
-            <button className="rounded-xl bg-emerald-500 px-6 py-3 text-sm font-black text-slate-950 transition hover:bg-emerald-400">
-              Lås upp för 49 kr/mån
-            </button>
+            <Link
+              href={PATREON_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center justify-center rounded-xl bg-emerald-500 px-6 py-3 text-sm font-black text-slate-950 transition hover:bg-emerald-400"
+            >
+              Lås upp via Patreon
+            </Link>
           </div>
         </div>
       </section>
@@ -772,6 +810,7 @@ function MacroAccordion({
   title,
   badge,
   count,
+  previewLimit,
   description,
   indicators,
   defaultOpen = false,
@@ -779,6 +818,7 @@ function MacroAccordion({
   title: string;
   badge: string;
   count: number;
+  previewLimit: number;
   description: string;
   indicators: {
     category?: string;
@@ -791,12 +831,24 @@ function MacroAccordion({
   }[];
   defaultOpen?: boolean;
 }) {
+  const accordionId =
+    title === "Snabb Makro" ? "snabb-makro-accordion" : "lagg-makro-accordion";
+  const visibleIndicators = indicators.slice(0, previewLimit);
+  const lockedIndicators = indicators.slice(previewLimit);
+
   return (
-    <details
-      open={defaultOpen}
-      className="group overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm"
-    >
-      <summary className="flex cursor-pointer list-none items-center justify-between gap-4 bg-slate-50 px-4 py-4 transition hover:bg-slate-100">
+    <div id={`${accordionId}-top`} className="scroll-mt-24 overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
+      <input
+        id={accordionId}
+        type="checkbox"
+        defaultChecked={defaultOpen}
+        className="peer hidden"
+      />
+
+      <label
+        htmlFor={accordionId}
+        className="flex cursor-pointer list-none items-center justify-between gap-4 bg-slate-50 px-4 py-4 transition hover:bg-slate-100"
+      >
         <div>
           <div className="flex items-center gap-2">
             <h3 className="text-base font-black">{title}</h3>
@@ -804,20 +856,45 @@ function MacroAccordion({
               {badge}
             </span>
           </div>
+
           <p className="mt-1 text-xs font-semibold text-slate-500">
-  Klicka för att visa {count} indikatorer
-</p>
+            Klicka för att visa {count} indikatorer
+          </p>
         </div>
 
-        <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-slate-950 text-lg font-black text-white transition group-open:rotate-45">
+        <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-slate-950 text-lg font-black text-white transition peer-checked:rotate-45">
           +
         </span>
-      </summary>
+      </label>
 
-      <div className="border-t border-slate-200 p-4">
+      <div className="grid grid-rows-[0fr] border-t border-slate-200 transition-all duration-300 ease-out peer-checked:grid-rows-[1fr]">
+        <div className="min-h-0 overflow-hidden p-4">
         <p className="max-w-4xl text-sm leading-7 text-slate-600">
           {description}
         </p>
+
+        <div className="mt-4 rounded-2xl border border-emerald-100 bg-emerald-50 p-4">
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+            <div>
+              <p className="text-sm font-black text-emerald-900">
+                Preview-läge
+              </p>
+              <p className="mt-1 text-xs font-semibold leading-5 text-emerald-800">
+                De tre första indikatorerna visas gratis. Resterande indikatorer
+                och hela veckobedömningen låses upp via Patreon.
+              </p>
+            </div>
+
+            <Link
+              href={PATREON_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex shrink-0 items-center justify-center rounded-xl bg-emerald-500 px-4 py-2 text-xs font-black text-slate-950 transition hover:bg-emerald-400"
+            >
+              Lås upp 49 kr/mån
+            </Link>
+          </div>
+        </div>
 
         <div className="mt-5 hidden overflow-hidden rounded-2xl border border-slate-200 lg:block">
           <table className="w-full border-collapse text-sm">
@@ -842,7 +919,7 @@ function MacroAccordion({
             </thead>
 
             <tbody>
-              {indicators.map((item) => (
+              {visibleIndicators.map((item) => (
                 <tr key={`${title}-${item.name}`} className="border-t border-slate-100">
                   <td className="px-4 py-3 text-xs font-black text-slate-500">
                     {item.category ?? "Snabb Makro"}
@@ -862,39 +939,170 @@ function MacroAccordion({
               ))}
             </tbody>
           </table>
+
+          {lockedIndicators.length > 0 && (
+            <div className="relative border-t border-slate-200">
+              <div className="pointer-events-none select-none blur-[2px] opacity-50">
+                <table className="w-full border-collapse text-sm">
+                  <tbody>
+                    {lockedIndicators.slice(0, 8).map((item) => (
+                      <tr
+                        key={`${title}-locked-${item.name}`}
+                        className="border-t border-slate-100"
+                      >
+                        <td className="px-4 py-3 text-xs font-black text-slate-500">
+                          {item.category ?? "Snabb Makro"}
+                        </td>
+                        <td className="px-4 py-3 font-bold">{item.name}</td>
+                        <td className="px-4 py-3">
+                          <ToneBadge tone={item.tone}>{item.value}</ToneBadge>
+                        </td>
+                        <td className="px-4 py-3 font-black">{item.score}</td>
+                        <td className="px-4 py-3">
+                          <p className="font-black">{item.status}</p>
+                          <p className="mt-1 text-xs leading-5 text-slate-500">
+                            {item.comment}
+                          </p>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+
+              <LockedOverlay count={lockedIndicators.length} />
+            </div>
+          )}
         </div>
 
         <div className="mt-5 grid gap-3 lg:hidden">
-          {indicators.map((item) => (
-            <div
-              key={`${title}-${item.name}`}
-              className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm"
-            >
-              <div className="flex items-start justify-between gap-3">
-                <div>
-                  {item.category && (
-                    <p className="mb-1 text-[11px] font-black uppercase text-slate-400">
-                      {item.category}
-                    </p>
-                  )}
-                  <h3 className="font-black">{item.name}</h3>
-                  <p className="mt-1 text-xs font-bold text-slate-500">
-                    Poäng: {item.score}
-                  </p>
-                </div>
+          {visibleIndicators.map((item) => (
+            <IndicatorCard key={`${title}-${item.name}`} item={item} />
+          ))}
 
-                <ToneBadge tone={item.tone}>{item.value}</ToneBadge>
+          {lockedIndicators.length > 0 && (
+            <div className="relative min-h-[340px] overflow-hidden rounded-2xl border border-slate-200">
+              <div className="pointer-events-none select-none space-y-3 p-3 blur-[2px] opacity-50">
+                {lockedIndicators.slice(0, 4).map((item) => (
+                  <IndicatorCard key={`${title}-locked-${item.name}`} item={item} />
+                ))}
               </div>
 
-              <p className="mt-3 text-sm font-black">{item.status}</p>
-              <p className="mt-1 text-sm leading-6 text-slate-600">
-                {item.comment}
-              </p>
+              <LockedOverlay count={lockedIndicators.length} />
             </div>
-          ))}
+          )}
+        </div>
+
+        <a href={`#${accordionId}-top`} className="block">
+          <label
+            htmlFor={accordionId}
+            className="mt-5 flex cursor-pointer items-center justify-center rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-black text-slate-700 transition hover:bg-slate-100"
+          >
+            Stäng {title}
+          </label>
+        </a>
         </div>
       </div>
-    </details>
+    </div>
+  );
+}
+
+function IndicatorCard({
+  item,
+}: {
+  item: {
+    category?: string;
+    name: string;
+    value: string;
+    score: string;
+    status: string;
+    comment: string;
+    tone: string;
+  };
+}) {
+  return (
+    <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
+      <div className="flex items-start justify-between gap-3">
+        <div>
+          {item.category && (
+            <p className="mb-1 text-[11px] font-black uppercase text-slate-400">
+              {item.category}
+            </p>
+          )}
+          <h3 className="font-black">{item.name}</h3>
+          <p className="mt-1 text-xs font-bold text-slate-500">
+            Poäng: {item.score}
+          </p>
+        </div>
+
+        <ToneBadge tone={item.tone}>{item.value}</ToneBadge>
+      </div>
+
+      <p className="mt-3 text-sm font-black">{item.status}</p>
+      <p className="mt-1 text-sm leading-6 text-slate-600">
+        {item.comment}
+      </p>
+    </div>
+  );
+}
+
+function LockedOverlay({ count }: { count: number }) {
+  return (
+    <div className="absolute inset-0 z-10 flex items-center justify-center bg-white/75 p-4 backdrop-blur-[3px]">
+      <div className="max-w-sm rounded-2xl border border-slate-200 bg-white p-5 text-center shadow-xl">
+        <div className="mx-auto flex h-11 w-11 items-center justify-center rounded-full bg-slate-950 text-white">
+          <Lock size={18} />
+        </div>
+
+        <h4 className="mt-3 text-base font-black">
+          {count} indikatorer är låsta
+        </h4>
+
+        <p className="mt-2 text-sm leading-6 text-slate-600">
+          Lås upp hela Makro Pro, alla indikatorer och veckobedömningen via
+          Patreon.
+        </p>
+
+        <Link
+          href={PATREON_URL}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="mt-4 inline-flex items-center justify-center rounded-xl bg-emerald-500 px-4 py-2 text-xs font-black text-slate-950 transition hover:bg-emerald-400"
+        >
+          Lås upp för 49 kr/mån
+        </Link>
+      </div>
+    </div>
+  );
+}
+
+function DarkLockedOverlay({ count }: { count: number }) {
+  return (
+    <div className="absolute inset-0 z-10 flex items-center justify-center bg-slate-950/75 p-4 backdrop-blur-[3px]">
+      <div className="max-w-sm rounded-2xl border border-slate-800 bg-slate-900 p-4 text-center shadow-xl sm:p-5">
+        <div className="mx-auto flex h-11 w-11 items-center justify-center rounded-full bg-slate-950 text-white">
+          <Lock size={18} />
+        </div>
+
+        <h4 className="mt-3 text-base font-black text-white">
+          {count} signaler är låsta
+        </h4>
+
+        <p className="mt-2 text-sm leading-6 text-slate-300">
+          Lås upp hela Makro Pro via Patreon för att se den fullständiga
+          bedömningen.
+        </p>
+
+        <Link
+          href={PATREON_URL}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="mt-4 inline-flex items-center justify-center rounded-xl bg-emerald-500 px-4 py-2 text-xs font-black text-slate-950 transition hover:bg-emerald-400"
+        >
+          Lås upp för 49 kr/mån
+        </Link>
+      </div>
+    </div>
   );
 }
 
@@ -918,7 +1126,7 @@ function ScoreCard({
       : "bg-yellow-500/10 text-yellow-300 border-yellow-500/30";
 
   return (
-    <div className={`rounded-2xl border p-3 sm:p-4 ${colorClass}`}>
+    <div className={`rounded-2xl border p-3 sm:p-4 lg:p-5 ${colorClass}`}>
       <p className="whitespace-nowrap text-[9px] font-black uppercase leading-tight sm:text-xs">
   {item.label}
 </p>
