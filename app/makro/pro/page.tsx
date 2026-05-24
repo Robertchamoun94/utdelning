@@ -867,8 +867,8 @@ function MacroAccordion({
         </span>
       </label>
 
-      <div className="grid grid-rows-[0fr] border-t border-slate-200 transition-all duration-300 ease-out peer-checked:grid-rows-[1fr]">
-        <div className="min-h-0 overflow-hidden p-4">
+      <div className="grid grid-rows-[0fr] border-t-0 border-slate-200 transition-all duration-300 ease-out peer-checked:grid-rows-[1fr] peer-checked:border-t">
+        <div className="min-h-0 overflow-hidden p-0 peer-checked:p-4">
         <p className="max-w-4xl text-sm leading-7 text-slate-600">
           {description}
         </p>
