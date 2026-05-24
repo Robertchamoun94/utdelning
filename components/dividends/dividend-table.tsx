@@ -215,7 +215,7 @@ export function DividendTable({ dividends }: DividendTableProps) {
                           </div>
 
                           <div className="mt-1 w-fit rounded-full bg-emerald-50 px-1.5 py-0.5 text-[9px] font-black text-emerald-700 sm:hidden">
-  Direkt avkastning: {formatDividendYield(dividend.company)}
+  D.avkastning: {formatDividendYield(dividend.company)}
 </div>
                         </div>
                       </Link>
