@@ -2,7 +2,11 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Calculator, CalendarClock } from "lucide-react";
+import {
+  Calculator,
+  CalendarClock,
+  BarChart3,
+} from "lucide-react";
 
 export function MobileBottomNav() {
   const pathname = usePathname();
@@ -14,6 +18,11 @@ export function MobileBottomNav() {
       icon: CalendarClock,
     },
     {
+      label: "Makro",
+      href: "/makro",
+      icon: BarChart3,
+    },
+    {
       label: "Räkna Avkastning",
       href: "/rakna",
       icon: Calculator,
@@ -22,7 +31,7 @@ export function MobileBottomNav() {
 
   return (
     <nav className="fixed bottom-0 left-0 right-0 z-50 border-t border-slate-800 bg-slate-950 lg:hidden">
-      <div className="grid h-16 grid-cols-2">
+      <div className="grid h-16 grid-cols-3">
         {items.map((item) => {
           const active = pathname === item.href;
           const Icon = item.icon;
