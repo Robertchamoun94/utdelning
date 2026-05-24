@@ -837,7 +837,10 @@ function MacroAccordion({
   const lockedIndicators = indicators.slice(previewLimit);
 
   return (
-    <div id={`${accordionId}-top`} className="scroll-mt-24 overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
+    <div
+      id={`${accordionId}-top`}
+      className="macro-accordion scroll-mt-24 overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm [&:has(input:checked)_.accordion-plus]:rotate-45"
+    >
       <input
         id={accordionId}
         type="checkbox"
@@ -862,16 +865,16 @@ function MacroAccordion({
           </p>
         </div>
 
-        <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-slate-950 text-lg font-black text-white transition peer-checked:rotate-45">
+        <span className="accordion-plus flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-slate-950 text-lg font-black text-white transition-transform duration-300">
           +
         </span>
       </label>
 
       <div className="grid grid-rows-[0fr] border-t-0 border-slate-200 transition-all duration-300 ease-out peer-checked:grid-rows-[1fr] peer-checked:border-t">
-        <div className="min-h-0 overflow-hidden p-0 peer-checked:p-4">
+        <div className="min-h-0 overflow-hidden p-0 peer-checked:px-5 peer-checked:py-4 sm:peer-checked:px-6">
         <p className="max-w-4xl text-sm leading-7 text-slate-600">
-          {description}
-        </p>
+  {description}
+</p>
 
         <div className="mt-4 rounded-2xl border border-emerald-100 bg-emerald-50 p-4">
           <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
