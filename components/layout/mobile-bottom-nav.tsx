@@ -36,7 +36,9 @@ export function MobileBottomNav() {
           const active =
             pathname === item.href ||
             (item.href === "/" &&
-              (pathname === "/" || pathname.startsWith("/makro")));
+              (pathname === "/" ||
+                pathname.startsWith("/nyheter") ||
+                pathname.startsWith("/makro")));
           const Icon = item.icon;
 
           return (

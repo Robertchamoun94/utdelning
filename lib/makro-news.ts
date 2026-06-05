@@ -127,7 +127,7 @@ export function getAbsoluteUrl(pathOrUrl: string) {
 }
 
 export function createArticleJsonLd(post: MakroNewsPost) {
-  const url = `${SITE_URL}/makro/${post.slug}`;
+  const url = `${SITE_URL}/nyheter/${post.slug}`;
   const image = getAbsoluteUrl(post.imageUrl);
 
   return {

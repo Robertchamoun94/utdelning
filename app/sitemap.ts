@@ -28,7 +28,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   }));
   const makroPosts = await getMakroNewsPosts();
   const makroNewsPages = makroPosts.map((post) => ({
-    url: `${SITE_URL}/makro/${post.slug}`,
+    url: `${SITE_URL}/nyheter/${post.slug}`,
     lastModified: new Date(post.updatedAt),
     changeFrequency: "weekly" as const,
     priority: 0.75,

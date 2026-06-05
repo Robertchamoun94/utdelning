@@ -440,8 +440,8 @@ export default function MakroProPage() {
 
       <header className="relative flex h-14 items-center justify-center border-b border-slate-800 bg-slate-950 px-4 text-white lg:hidden">
         <Link
-          href="/makro"
-          aria-label="Tillbaka till Makro"
+          href="/"
+          aria-label="Tillbaka till nyheter"
           className="absolute left-4 text-white transition hover:text-emerald-400"
         >
           <ArrowLeft size={21} />
@@ -454,7 +454,7 @@ export default function MakroProPage() {
 
       <section className="mx-auto max-w-[1240px] px-4 py-5 lg:px-8 lg:py-10">
         <Link
-          href="/makro"
+          href="/"
           className="mb-4 hidden w-fit items-center gap-2 text-sm font-bold text-slate-500 transition hover:text-emerald-600 lg:flex"
         >
           <ArrowLeft size={16} />

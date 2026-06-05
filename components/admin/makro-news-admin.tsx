@@ -337,7 +337,7 @@ export function MakroNewsAdmin() {
           {posts.map((post) => (
             <Link
               key={post.id}
-              href={`/makro/${post.slug}`}
+              href={`/nyheter/${post.slug}`}
               className="rounded-2xl border border-slate-200 p-4 transition hover:border-emerald-400"
             >
               <p className="text-xs font-black uppercase tracking-[0.14em] text-emerald-600">

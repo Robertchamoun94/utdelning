@@ -122,7 +122,7 @@ function LeadArticle({ article }: { article: MakroNewsPost }) {
       <div className="p-4 lg:p-5">
         <ArticleMeta article={article} />
 
-        <Link href={`/makro/${article.slug}`}>
+        <Link href={`/nyheter/${article.slug}`}>
           <h2 className="mt-3 text-3xl font-black leading-[1.02] tracking-tight transition hover:text-emerald-700 lg:text-5xl">
             {article.title}
           </h2>
@@ -144,7 +144,7 @@ function SecondaryArticle({ article }: { article: MakroNewsPost }) {
       <div className="p-4">
         <ArticleMeta article={article} compact />
 
-        <Link href={`/makro/${article.slug}`}>
+        <Link href={`/nyheter/${article.slug}`}>
           <h3 className="mt-3 text-2xl font-black leading-tight tracking-tight transition hover:text-emerald-700">
             {article.title}
           </h3>
@@ -166,7 +166,7 @@ function NewsRow({ article }: { article: MakroNewsPost }) {
       <div>
         <ArticleMeta article={article} compact />
 
-        <Link href={`/makro/${article.slug}`}>
+        <Link href={`/nyheter/${article.slug}`}>
           <h3 className="mt-2 text-xl font-black leading-tight tracking-tight transition hover:text-emerald-700">
             {article.title}
           </h3>
@@ -188,7 +188,7 @@ function LatestPanel({ articles }: { articles: MakroNewsPost[] }) {
         {articles.map((article) => (
           <li key={article.id}>
             <Link
-              href={`/makro/${article.slug}`}
+              href={`/nyheter/${article.slug}`}
               className="grid gap-1 p-3 transition hover:bg-slate-50"
             >
               <span className="text-xs font-black text-emerald-700">
@@ -213,7 +213,7 @@ function MostReadPanel({ articles }: { articles: MakroNewsPost[] }) {
         {articles.map((article, index) => (
           <li key={article.id}>
             <Link
-              href={`/makro/${article.slug}`}
+              href={`/nyheter/${article.slug}`}
               className="grid grid-cols-[34px_1fr] gap-3 p-3 transition hover:bg-slate-50"
             >
               <span className="text-2xl font-black leading-none text-emerald-600">

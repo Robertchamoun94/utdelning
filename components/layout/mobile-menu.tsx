@@ -71,7 +71,9 @@ export function MobileMenu() {
                 const active =
                   pathname === item.href ||
                   (item.href === "/" &&
-                    (pathname === "/" || pathname.startsWith("/makro")));
+                    (pathname === "/" ||
+                      pathname.startsWith("/nyheter") ||
+                      pathname.startsWith("/makro")));
 
                 return (
                   <Link
