@@ -12,7 +12,7 @@ export function CookieBanner() {
     const savedConsent = localStorage.getItem(COOKIE_KEY);
 
     if (!savedConsent) {
-      setVisible(true);
+      window.setTimeout(() => setVisible(true), 0);
     }
   }, []);
 

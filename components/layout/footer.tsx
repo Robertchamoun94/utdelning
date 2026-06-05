@@ -11,15 +11,15 @@ export function Footer() {
 
         <nav className="flex items-center gap-6 text-sm font-semibold text-slate-300">
           <Link href="/" className="transition hover:text-white">
-            Hem
+            Nyheter
+          </Link>
+
+          <Link href="/utdelningskalender" className="transition hover:text-white">
+            Utdelningskalender
           </Link>
 
           <Link href="/rakna" className="transition hover:text-white">
             Räkna avkastning
-          </Link>
-
-          <Link href="/makro" className="transition hover:text-white">
-            Makro Ekonomi
           </Link>
 
           <Link href="/integritetspolicy" className="transition hover:text-white">

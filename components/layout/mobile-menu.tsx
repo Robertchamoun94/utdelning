@@ -7,16 +7,16 @@ import { useState } from "react";
 
 const navItems = [
   {
-    label: "Hem",
+    label: "Nyheter",
     href: "/",
+  },
+  {
+    label: "Utdelningskalender",
+    href: "/utdelningskalender",
   },
   {
     label: "Räkna avkastning",
     href: "/rakna",
-  },
-  {
-    label: "Makro Ekonomi",
-    href: "/makro",
   },
   {
     label: "Integritetspolicy",
@@ -38,7 +38,7 @@ export function MobileMenu() {
         type="button"
         onClick={() => setOpen(true)}
         aria-label="Öppna meny"
-        className="fixed right-4 top-3 z-[80] flex h-9 w-9 items-center justify-center rounded-full border border-slate-800 bg-slate-950 text-white shadow-lg lg:hidden"
+        className="fixed right-4 top-3 z-[95] flex h-9 w-9 items-center justify-center rounded-full border border-slate-800 bg-slate-950 text-white shadow-lg lg:hidden"
       >
         <Menu size={20} />
       </button>
@@ -70,7 +70,8 @@ export function MobileMenu() {
               {navItems.map((item) => {
                 const active =
                   pathname === item.href ||
-                  (item.href === "/makro" && pathname.startsWith("/makro"));
+                  (item.href === "/" &&
+                    (pathname === "/" || pathname.startsWith("/makro")));
 
                 return (
                   <Link

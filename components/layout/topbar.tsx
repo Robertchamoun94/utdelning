@@ -14,21 +14,21 @@ export function Topbar({ search = "", onSearchChange }: TopbarProps) {
 
   const navItems = [
     {
-      label: "Utdelningar",
+      label: "Nyheter",
       href: "/",
+    },
+    {
+      label: "Utdelningskalender",
+      href: "/utdelningskalender",
     },
     {
       label: "Räkna avkastning",
       href: "/rakna",
     },
-    {
-      label: "Makro",
-      href: "/makro",
-    },
   ];
 
   return (
-    <header className="h-14 border-b border-slate-800 bg-slate-950 lg:h-16">
+    <header className="sticky top-0 z-[90] h-14 border-b border-slate-800 bg-slate-950 lg:h-16">
       <div className="mx-auto flex h-full max-w-[1520px] items-center justify-center gap-4 px-4 lg:justify-between lg:px-7">
         <Link
           href="/"
@@ -42,7 +42,8 @@ export function Topbar({ search = "", onSearchChange }: TopbarProps) {
           {navItems.map((item) => {
             const active =
               pathname === item.href ||
-              (item.href === "/makro" && pathname.startsWith("/makro"));
+              (item.href === "/" &&
+                (pathname === "/" || pathname.startsWith("/makro")));
 
             return (
               <Link

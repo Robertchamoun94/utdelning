@@ -1,7 +1,7 @@
 import { Footer } from "@/components/layout/footer";
 import { MobileMenu } from "@/components/layout/mobile-menu";
 import { CookieBanner } from "@/components/cookie-banner";
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import Script from "next/script";
 import "./globals.css";
 
@@ -59,6 +59,11 @@ export const metadata: Metadata = {
   category: "finance",
 };
 
+export const viewport: Viewport = {
+  themeColor: "#020617",
+  colorScheme: "light",
+};
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -82,10 +87,10 @@ export default function RootLayout({
         </Script>
       </head>
 
-      <body className="min-h-full flex flex-col">
+      <body className="min-h-full flex flex-col bg-white text-slate-950">
         {children}
         <Footer />
-  <MobileMenu />
+        <MobileMenu />
         <CookieBanner />
       </body>
     </html>

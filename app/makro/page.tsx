@@ -1,105 +1,112 @@
 import Link from "next/link";
-import { BarChart3, Lock, ArrowRight, CheckCircle2 } from "lucide-react";
+import Image from "next/image";
+import {
+  ArrowRight,
+  BarChart3,
+  CalendarDays,
+  Clock3,
+  Newspaper,
+  TrendingUp,
+} from "lucide-react";
 import { MobileBottomNav } from "@/components/layout/mobile-bottom-nav";
 import { Topbar } from "@/components/layout/topbar";
+import { getMakroNewsPosts, type MakroNewsPost } from "@/lib/makro-news";
+
+export const dynamic = "force-dynamic";
 
 export const metadata = {
-  title: "Makro Pro – Makroekonomi för börsen | Utdelning.nu",
+  title: "Nyheter | Utdelning.nu",
   description:
-    "Få koll på makroekonomi, räntor, likviditet, kreditstress och marknadsregim med Makro Pro från Utdelning.nu.",
+    "Nyheter och analyser om makroekonomi, räntor, inflation, likviditet och marknadsläge från Utdelning.nu.",
+  alternates: {
+    canonical: "/",
+  },
+  openGraph: {
+    type: "website",
+    locale: "sv_SE",
+    url: "https://utdelning.nu",
+    siteName: "Utdelning.nu",
+    title: "Nyheter | Utdelning.nu",
+    description:
+      "Följ nyheter och analyser om räntor, inflation, likviditet, kreditstress och marknadsläge.",
+  },
 };
 
-export default function MakroPage() {
+const topics = [
+  "Räntor",
+  "Inflation",
+  "Likviditet",
+  "Kreditstress",
+  "Konjunktur",
+  "Centralbanker",
+];
+
+export default async function MakroPage() {
+  const posts = await getMakroNewsPosts();
+  const [leadArticle, secondArticle, thirdArticle, ...feedArticles] = posts;
+  const latestArticles = posts.slice(0, 6);
+  const mostReadArticles = posts.slice(0, 5);
+
   return (
-    <main className="min-h-dvh bg-slate-100 pb-20 text-slate-950 lg:pb-0">
+    <main className="min-h-dvh bg-[#f2f4f3] pb-20 text-slate-950 lg:pb-0">
       <div className="hidden lg:block">
         <Topbar />
       </div>
 
-      <header className="flex h-14 items-center justify-center border-b border-slate-800 bg-slate-950 px-4 text-white lg:hidden">
+      <header className="sticky top-0 z-[90] flex h-14 items-center justify-center border-b border-slate-800 bg-slate-950 px-4 text-white lg:hidden">
         <Link href="/" className="text-lg font-black tracking-tight">
           <span className="text-emerald-500">utdelning</span>
           <span>.nu</span>
         </Link>
       </header>
 
-      <section className="mx-auto max-w-[1180px] px-4 py-5 lg:px-8 lg:py-10">
-        <div className="overflow-hidden rounded-3xl border border-slate-800 bg-slate-950 text-white shadow-xl">
-          <div className="px-5 py-8 lg:px-10 lg:py-12">
-            <div className="max-w-4xl">
-              <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-emerald-500/30 bg-emerald-500/10 px-3 py-1 text-xs font-bold text-emerald-300">
-                <BarChart3 size={14} />
-                Makro Pro
-              </div>
+      <section className="mx-auto max-w-[1180px] px-4 py-4 lg:px-8 lg:py-6">
+        {leadArticle ? (
+          <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_330px]">
+            <div className="grid gap-4">
+              <div className="grid gap-4 xl:grid-cols-[minmax(0,1.15fr)_minmax(280px,0.85fr)]">
+                <LeadArticle article={leadArticle} />
 
-              <h1 className="max-w-3xl text-3xl font-black tracking-tight lg:text-5xl">
-                Få koll på makroekonomin bakom börsen
-              </h1>
-
-              <p className="mt-4 max-w-2xl text-sm leading-7 text-slate-300 lg:text-base">
-                Räntor, likviditet, kreditstress och marknadsregim påverkar
-                börsen mer än många tror. Makro Pro sammanfattar signalerna i
-                ett tydligt system så att du snabbare förstår marknadsläget.
-              </p>
-
-              <div className="mt-6 flex flex-col gap-3 sm:flex-row">
-                <Link
-                  href="/makro/pro"
-                  className="inline-flex items-center justify-center gap-2 rounded-xl bg-emerald-500 px-5 py-3 text-sm font-black text-slate-950 transition hover:bg-emerald-400"
-                >
-                  Se Makro Pro
-                  <ArrowRight size={18} />
-                </Link>
-              </div>
-            </div>
-
-            <div className="mt-8 rounded-2xl border border-slate-800 bg-slate-900 p-5 lg:p-6">
-              <div className="grid gap-6 lg:grid-cols-[0.95fr_1.05fr] lg:items-center">
-                <div>
-                  <h2 className="text-2xl font-black tracking-tight lg:text-3xl">
-                    Varför Makroekonomi?
-                  </h2>
-
-                </div>
-
-                <div className="grid gap-3">
-                  <Reason text="Räntor påverkar värderingar och avkastningskrav." />
-                  <Reason text="Likviditet påverkar riskviljan på marknaden." />
-                  <Reason text="Kreditstress kan varna för svagare börsklimat." />
-                  <Reason text="Makroregim hjälper dig förstå när risk/reward förändras." />
+                <div className="grid gap-4">
+                  {secondArticle && <SecondaryArticle article={secondArticle} />}
+                  {thirdArticle && <SecondaryArticle article={thirdArticle} />}
                 </div>
               </div>
-            </div>
-          </div>
-        </div>
 
-        <div className="mt-6 rounded-3xl border border-slate-800 bg-slate-950 p-5 text-white shadow-xl lg:p-8">
-          <div className="grid gap-6 lg:grid-cols-[1fr_auto] lg:items-center">
-            <div>
-              <div className="mb-3 flex items-center gap-2 text-emerald-400">
-                <Lock size={18} />
-                <span className="text-sm font-black">Makro Pro</span>
-              </div>
-
-              <h2 className="text-2xl font-black lg:text-3xl">
-                Gå till makrosystemet
-              </h2>
-
-              <p className="mt-3 max-w-2xl text-sm leading-7 text-slate-300">
-                Få tillgång till makrostatus, indikatorer, signaler och en
-                tydlig veckobedömning av marknadsläget.
-              </p>
+              <section className="border border-slate-200 bg-white">
+                <SectionHeader title="Senaste nyheterna" />
+                <div className="divide-y divide-slate-200">
+                  {feedArticles.length > 0 ? (
+                    feedArticles.map((article) => (
+                      <NewsRow key={article.id} article={article} />
+                    ))
+                  ) : (
+                    <p className="p-4 text-sm font-semibold text-slate-500">
+                      Fler nyheter visas här när du publicerar nya inlägg.
+                    </p>
+                  )}
+                </div>
+              </section>
             </div>
 
-            <Link
-              href="/makro/pro"
-              className="inline-flex items-center justify-center gap-2 rounded-xl bg-emerald-500 px-6 py-3 text-sm font-black text-slate-950 transition hover:bg-emerald-400"
-            >
-              Fortsätt
-              <ArrowRight size={18} />
-            </Link>
+            <aside className="grid content-start gap-4">
+              <LatestPanel articles={latestArticles} />
+              <MostReadPanel articles={mostReadArticles} />
+              <TopicPanel />
+              <MacroProPanel />
+            </aside>
           </div>
-        </div>
+        ) : (
+          <section className="border border-slate-200 bg-white p-5 lg:p-8">
+            <h2 className="text-2xl font-black tracking-tight">
+              Inga nyheter publicerade ännu
+            </h2>
+            <p className="mt-3 text-sm leading-7 text-slate-600">
+              När du publicerar en ny makroartikel i adminpanelen visas den
+              automatiskt högst upp här.
+            </p>
+          </section>
+        )}
       </section>
 
       <MobileBottomNav />
@@ -107,11 +114,253 @@ export default function MakroPage() {
   );
 }
 
-function Reason({ text }: { text: string }) {
+function LeadArticle({ article }: { article: MakroNewsPost }) {
   return (
-    <div className="flex gap-3 rounded-xl border border-slate-800 bg-slate-950 p-4">
-      <CheckCircle2 className="mt-0.5 shrink-0 text-emerald-400" size={19} />
-      <p className="text-sm font-semibold leading-6 text-slate-200">{text}</p>
+    <article className="border border-slate-200 bg-white">
+      <ArticleImage article={article} className="h-64 lg:h-[360px]" priority />
+
+      <div className="p-4 lg:p-5">
+        <ArticleMeta article={article} />
+
+        <Link href={`/makro/${article.slug}`}>
+          <h2 className="mt-3 text-3xl font-black leading-[1.02] tracking-tight transition hover:text-emerald-700 lg:text-5xl">
+            {article.title}
+          </h2>
+        </Link>
+
+        <p className="mt-4 text-base font-semibold leading-7 text-slate-700">
+          {article.excerpt}
+        </p>
+      </div>
+    </article>
+  );
+}
+
+function SecondaryArticle({ article }: { article: MakroNewsPost }) {
+  return (
+    <article className="border border-slate-200 bg-white">
+      <ArticleImage article={article} className="h-40" />
+
+      <div className="p-4">
+        <ArticleMeta article={article} compact />
+
+        <Link href={`/makro/${article.slug}`}>
+          <h3 className="mt-3 text-2xl font-black leading-tight tracking-tight transition hover:text-emerald-700">
+            {article.title}
+          </h3>
+        </Link>
+
+        <p className="mt-3 line-clamp-3 text-sm font-semibold leading-6 text-slate-600">
+          {article.excerpt}
+        </p>
+      </div>
+    </article>
+  );
+}
+
+function NewsRow({ article }: { article: MakroNewsPost }) {
+  return (
+    <article className="grid gap-3 p-4 transition hover:bg-slate-50 sm:grid-cols-[140px_1fr]">
+      <ArticleImage article={article} className="h-28 sm:h-24" />
+
+      <div>
+        <ArticleMeta article={article} compact />
+
+        <Link href={`/makro/${article.slug}`}>
+          <h3 className="mt-2 text-xl font-black leading-tight tracking-tight transition hover:text-emerald-700">
+            {article.title}
+          </h3>
+        </Link>
+
+        <p className="mt-2 line-clamp-2 text-sm font-semibold leading-6 text-slate-600">
+          {article.excerpt}
+        </p>
+      </div>
+    </article>
+  );
+}
+
+function LatestPanel({ articles }: { articles: MakroNewsPost[] }) {
+  return (
+    <section className="border border-slate-200 bg-white">
+      <SectionHeader title="Just nu" dark />
+      <ol className="divide-y divide-slate-200">
+        {articles.map((article) => (
+          <li key={article.id}>
+            <Link
+              href={`/makro/${article.slug}`}
+              className="grid gap-1 p-3 transition hover:bg-slate-50"
+            >
+              <span className="text-xs font-black text-emerald-700">
+                {formatTime(article.publishedAt)}
+              </span>
+              <span className="text-sm font-black leading-5">
+                {article.title}
+              </span>
+            </Link>
+          </li>
+        ))}
+      </ol>
+    </section>
+  );
+}
+
+function MostReadPanel({ articles }: { articles: MakroNewsPost[] }) {
+  return (
+    <section className="border border-slate-200 bg-white">
+      <SectionHeader title="Mest läst" />
+      <ol className="divide-y divide-slate-200">
+        {articles.map((article, index) => (
+          <li key={article.id}>
+            <Link
+              href={`/makro/${article.slug}`}
+              className="grid grid-cols-[34px_1fr] gap-3 p-3 transition hover:bg-slate-50"
+            >
+              <span className="text-2xl font-black leading-none text-emerald-600">
+                {index + 1}
+              </span>
+              <span className="text-sm font-black leading-5">
+                {article.title}
+              </span>
+            </Link>
+          </li>
+        ))}
+      </ol>
+    </section>
+  );
+}
+
+function TopicPanel() {
+  return (
+    <section className="border border-slate-200 bg-white">
+      <SectionHeader title="Bevakning" />
+      <div className="flex flex-wrap gap-2 p-4">
+        {topics.map((topic) => (
+          <span
+            key={topic}
+            className="rounded-sm border border-slate-200 bg-slate-50 px-2.5 py-1 text-xs font-black text-slate-700"
+          >
+            {topic}
+          </span>
+        ))}
+      </div>
+    </section>
+  );
+}
+
+function MacroProPanel() {
+  return (
+    <section className="border border-slate-900 bg-slate-950 p-4 text-white">
+      <div className="mb-3 flex items-center gap-2 text-emerald-400">
+        <BarChart3 size={18} />
+        <h2 className="text-sm font-black uppercase tracking-[0.16em]">
+          Makro Pro
+        </h2>
+      </div>
+
+      <p className="text-sm font-semibold leading-6 text-slate-300">
+        Dashboarden med indikatorer, signaler och veckobedömning finns kvar för
+        dig som vill se hela makromodellen.
+      </p>
+
+      <Link
+        href="/makro/pro"
+        className="mt-4 inline-flex items-center justify-center gap-2 rounded-sm bg-emerald-500 px-4 py-2.5 text-sm font-black text-slate-950 transition hover:bg-emerald-400"
+      >
+        Öppna dashboard
+        <ArrowRight size={17} />
+      </Link>
+    </section>
+  );
+}
+
+function SectionHeader({ title, dark }: { title: string; dark?: boolean }) {
+  return (
+    <div
+      className={`flex items-center justify-between border-b px-3 py-2 ${
+        dark
+          ? "border-slate-800 bg-slate-950 text-white"
+          : "border-slate-200 bg-white text-slate-950"
+      }`}
+    >
+      <h2 className="text-sm font-black uppercase tracking-[0.14em]">
+        {title}
+      </h2>
+      <TrendingUp size={16} className={dark ? "text-emerald-400" : "text-emerald-600"} />
     </div>
   );
+}
+
+function ArticleImage({
+  article,
+  className,
+  priority,
+}: {
+  article: MakroNewsPost;
+  className: string;
+  priority?: boolean;
+}) {
+  if (!article.imageUrl) {
+    return (
+      <div
+        className={`flex items-center justify-center bg-slate-950 text-emerald-400 ${className}`}
+      >
+        <Newspaper size={32} />
+      </div>
+    );
+  }
+
+  return (
+    <div className={`relative overflow-hidden bg-slate-200 ${className}`}>
+      <Image
+        src={article.imageUrl}
+        alt={article.imageAlt || article.title}
+        fill
+        priority={priority}
+        sizes="(min-width: 1024px) 760px, 100vw"
+        className="object-cover"
+      />
+    </div>
+  );
+}
+
+function ArticleMeta({
+  article,
+  compact,
+}: {
+  article: MakroNewsPost;
+  compact?: boolean;
+}) {
+  return (
+    <div className="flex flex-wrap items-center gap-2 text-xs font-black text-slate-500">
+      <span className="bg-emerald-100 px-2 py-1 text-emerald-800">
+        {article.category}
+      </span>
+      <span className="inline-flex items-center gap-1">
+        <CalendarDays size={13} />
+        {new Date(article.publishedAt).toLocaleDateString("sv-SE", {
+          day: "numeric",
+          month: compact ? "short" : "long",
+          year: "numeric",
+        })}
+      </span>
+      {!compact && (
+        <span className="inline-flex items-center gap-1">
+          <Clock3 size={13} />
+          {getReadTime(article)} min läsning
+        </span>
+      )}
+    </div>
+  );
+}
+
+function getReadTime(article: MakroNewsPost) {
+  return Math.max(2, Math.ceil(article.content.split(/\s+/).length / 220));
+}
+
+function formatTime(value: string) {
+  return new Date(value).toLocaleTimeString("sv-SE", {
+    hour: "2-digit",
+    minute: "2-digit",
+  });
 }
