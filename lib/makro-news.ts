@@ -95,15 +95,26 @@ export async function saveMakroNewsImage(file: File, slugSource: string) {
   const fileName = `${slug}-${Date.now()}.${extension}`;
 
   if (hasBlobStorage()) {
-    const blob = await put(`makro/images/${fileName}`, file, {
-      access: "public",
-      addRandomSuffix: false,
-      allowOverwrite: false,
-      contentType: file.type,
-      cacheControlMaxAge: 31536000,
-    });
+    try {
+      const blob = await put(`makro/images/${fileName}`, file, {
+        access: "public",
+        addRandomSuffix: false,
+        allowOverwrite: false,
+        contentType: file.type,
+        cacheControlMaxAge: 31536000,
+        token: getPublicImageBlobToken(),
+      });
 
-    return blob.url;
+      return blob.url;
+    } catch (error) {
+      if (isPrivateStoreAccessError(error)) {
+        throw new Error(
+          "Nyhetsbilden kunde inte laddas upp eftersom Blob-token pekar pÃ¥ en private Blob Store. Skapa en separat public Blob Store i Vercel och lÃ¤gg dess token som BLOB_PUBLIC_READ_WRITE_TOKEN."
+        );
+      }
+
+      throw error;
+    }
   }
 
   await fs.mkdir(UPLOAD_DIR, { recursive: true });
@@ -214,6 +225,7 @@ async function writeNewsFile(posts: MakroNewsPost[]) {
       access: "private",
       allowOverwrite: true,
       contentType: "application/json; charset=utf-8",
+      token: process.env.BLOB_READ_WRITE_TOKEN,
     });
     return;
   }
@@ -226,6 +238,7 @@ async function readNewsBlob() {
   const blob = await get(BLOB_NEWS_PATH, {
     access: "private",
     useCache: false,
+    token: process.env.BLOB_READ_WRITE_TOKEN,
   });
 
   if (!blob?.stream) {
@@ -238,6 +251,20 @@ async function readNewsBlob() {
 
 function hasBlobStorage() {
   return Boolean(process.env.BLOB_READ_WRITE_TOKEN);
+}
+
+function getPublicImageBlobToken() {
+  return (
+    process.env.BLOB_PUBLIC_READ_WRITE_TOKEN ||
+    process.env.BLOB_READ_WRITE_TOKEN
+  );
+}
+
+function isPrivateStoreAccessError(error: unknown) {
+  return (
+    error instanceof Error &&
+    /Cannot use public access on a private store/i.test(error.message)
+  );
 }
 
 function getSafeImageExtension(file: File) {
