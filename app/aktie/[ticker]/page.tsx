@@ -288,7 +288,10 @@ export default async function AktiePage({
           <ArrowLeft size={20} />
         </Link>
 
-        <span className="text-sm font-black">Utdelning.nu</span>
+        <Link href="/" className="text-lg font-black tracking-tight">
+          <span className="text-emerald-500">utdelning</span>
+          <span>.nu</span>
+        </Link>
       </header>
 
       <section className="mx-auto max-w-[1100px] px-3 py-3 lg:px-6 lg:py-8">

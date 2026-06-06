@@ -6,6 +6,7 @@ import { ArrowLeft, CalendarDays, Clock3 } from "lucide-react";
 import { MobileBottomNav } from "@/components/layout/mobile-bottom-nav";
 import { Topbar } from "@/components/layout/topbar";
 import { FormattedNewsTitle } from "@/components/news/formatted-news-title";
+import { NewsShareActions } from "@/components/news/news-share-actions";
 import { getPlainNewsTitle } from "@/lib/news-title-formatting";
 import {
   createArticleJsonLd,
@@ -100,6 +101,8 @@ export default async function NewsArticlePage({ params }: PageProps) {
 
   const paragraphs = splitContentIntoParagraphs(post.content);
   const jsonLd = createArticleJsonLd(post);
+  const plainTitle = getPlainNewsTitle(post.title);
+  const articleUrl = `https://utdelning.nu/nyheter/${post.slug}`;
 
   return (
     <main className="min-h-dvh bg-slate-100 pb-20 text-slate-950 lg:pb-0">
@@ -169,6 +172,12 @@ export default async function NewsArticlePage({ params }: PageProps) {
             <p className="mt-5 text-lg font-semibold leading-8 text-slate-600">
               {post.excerpt}
             </p>
+
+            <NewsShareActions
+              title={plainTitle}
+              excerpt={post.excerpt}
+              url={articleUrl}
+            />
 
             <div className="mt-8 grid gap-5 border-t border-slate-200 pt-8">
               {paragraphs.map((paragraph) => (
