@@ -13,14 +13,14 @@ export function MobileBottomNav() {
 
   const items = [
     {
-      label: "Nyheter",
+      label: "Utdelningskalender",
       href: "/",
-      icon: Newspaper,
+      icon: CalendarClock,
     },
     {
-      label: "Utdelningskalender",
-      href: "/utdelningskalender",
-      icon: CalendarClock,
+      label: "Nyheter",
+      href: "/nyheter",
+      icon: Newspaper,
     },
     {
       label: "Räkna Avkastning",
@@ -35,10 +35,9 @@ export function MobileBottomNav() {
         {items.map((item) => {
           const active =
             pathname === item.href ||
-            (item.href === "/" &&
-              (pathname === "/" ||
-                pathname.startsWith("/nyheter") ||
-                pathname.startsWith("/makro")));
+            (item.href === "/" && pathname === "/utdelningskalender") ||
+            (item.href === "/nyheter" &&
+              (pathname.startsWith("/nyheter") || pathname.startsWith("/makro")));
           const Icon = item.icon;
 
           return (

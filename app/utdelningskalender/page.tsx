@@ -7,11 +7,11 @@ const siteUrl = "https://utdelning.nu";
 export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
-  title: "Utdelningskalender | Utdelning.nu",
+  title: "Utdelning.nu - Utdelningskalender och X-datum för svenska aktier",
   description:
     "Se kommande utdelningar, X-datum och utdelningsbelopp för svenska aktier i Utdelning.nu:s utdelningskalender.",
   alternates: {
-    canonical: "/utdelningskalender",
+    canonical: "/",
   },
 };
 
@@ -42,7 +42,7 @@ const websiteSchema = {
   "@context": "https://schema.org",
   "@type": "WebSite",
   name: "Utdelning.nu",
-  url: `${siteUrl}/utdelningskalender`,
+  url: siteUrl,
   description:
     "Utdelningskalender för svenska aktier med kommande utdelningar, X-datum och utdelningsdagar.",
   inLanguage: "sv-SE",

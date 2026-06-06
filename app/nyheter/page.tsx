@@ -1,5 +1,3 @@
-import { permanentRedirect } from "next/navigation";
+export const dynamic = "force-dynamic";
 
-export default function NyheterPage() {
-  permanentRedirect("/");
-}
+export { metadata, default } from "../makro/page";

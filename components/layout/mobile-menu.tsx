@@ -7,12 +7,12 @@ import { useState } from "react";
 
 const navItems = [
   {
-    label: "Nyheter",
+    label: "Utdelningskalender",
     href: "/",
   },
   {
-    label: "Utdelningskalender",
-    href: "/utdelningskalender",
+    label: "Nyheter",
+    href: "/nyheter",
   },
   {
     label: "Räkna avkastning",
@@ -70,9 +70,9 @@ export function MobileMenu() {
               {navItems.map((item) => {
                 const active =
                   pathname === item.href ||
-                  (item.href === "/" &&
-                    (pathname === "/" ||
-                      pathname.startsWith("/nyheter") ||
+                  (item.href === "/" && pathname === "/utdelningskalender") ||
+                  (item.href === "/nyheter" &&
+                    (pathname.startsWith("/nyheter") ||
                       pathname.startsWith("/makro")));
 
                 return (

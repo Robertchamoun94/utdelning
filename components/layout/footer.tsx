@@ -11,11 +11,11 @@ export function Footer() {
 
         <nav className="flex items-center gap-6 text-sm font-semibold text-slate-300">
           <Link href="/" className="transition hover:text-white">
-            Nyheter
+            Utdelningskalender
           </Link>
 
-          <Link href="/utdelningskalender" className="transition hover:text-white">
-            Utdelningskalender
+          <Link href="/nyheter" className="transition hover:text-white">
+            Nyheter
           </Link>
 
           <Link href="/rakna" className="transition hover:text-white">

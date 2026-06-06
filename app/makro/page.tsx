@@ -14,12 +14,12 @@ export const metadata = {
   description:
     "Nyheter och analyser om makroekonomi, räntor, inflation, likviditet och marknadsläge från Utdelning.nu.",
   alternates: {
-    canonical: "/",
+    canonical: "/nyheter",
   },
   openGraph: {
     type: "website",
     locale: "sv_SE",
-    url: "https://utdelning.nu",
+    url: "https://utdelning.nu/nyheter",
     siteName: "Utdelning.nu",
     title: "Nyheter | Utdelning.nu",
     description:
