@@ -8,6 +8,7 @@ import { Topbar } from "@/components/layout/topbar";
 import { FormattedNewsTitle } from "@/components/news/formatted-news-title";
 import { NewsShareActions } from "@/components/news/news-share-actions";
 import { getPlainNewsTitle } from "@/lib/news-title-formatting";
+import { defaultShareImage, defaultTwitterImage } from "@/lib/share-metadata";
 import {
   createArticleJsonLd,
   getAbsoluteUrl,
@@ -42,6 +43,12 @@ export async function generateMetadata({
   const url = `/nyheter/${post.slug}`;
   const image = getAbsoluteUrl(post.imageUrl);
   const plainTitle = getPlainNewsTitle(post.title);
+  const shareImage = image
+    ? {
+        url: image,
+        alt: post.imageAlt || plainTitle,
+      }
+    : defaultShareImage;
 
   return {
     title: plainTitle,
@@ -60,22 +67,13 @@ export async function generateMetadata({
       publishedTime: post.publishedAt,
       modifiedTime: post.updatedAt,
       authors: [post.author],
-      ...(image
-        ? {
-            images: [
-              {
-                url: image,
-                alt: post.imageAlt || plainTitle,
-              },
-            ],
-          }
-        : {}),
+      images: [shareImage],
     },
     twitter: {
-      card: image ? "summary_large_image" : "summary",
+      card: "summary_large_image",
       title: plainTitle,
       description: post.excerpt,
-      ...(image ? { images: [image] } : {}),
+      images: [image ?? defaultTwitterImage],
     },
     robots: {
       index: true,

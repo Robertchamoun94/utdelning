@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { ReturnCalculator } from "@/components/calculators/return-calculator";
+import { defaultShareImage, defaultTwitterImage } from "@/lib/share-metadata";
 
 const siteUrl = "https://utdelning.nu";
 
@@ -28,12 +29,14 @@ export const metadata: Metadata = {
     title: "Räkna avkastning - ränta på ränta-kalkylator",
     description:
       "Beräkna hur ditt sparande kan växa över tid med startkapital, månadssparande och årlig avkastning.",
+    images: [defaultShareImage],
   },
   twitter: {
-    card: "summary",
+    card: "summary_large_image",
     title: "Räkna avkastning - ränta på ränta-kalkylator",
     description:
       "Testa Utdelning.nu:s kalkylator för avkastning, sparande och ränta på ränta.",
+    images: [defaultTwitterImage],
   },
   robots: {
     index: true,

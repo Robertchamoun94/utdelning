@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { DividendDashboard } from "@/components/dividends/dividend-dashboard";
 import { fetchUpcomingDividends } from "@/lib/api/dividends";
+import { defaultShareImage, defaultTwitterImage } from "@/lib/share-metadata";
 
 const siteUrl = "https://utdelning.nu";
 
@@ -12,6 +13,23 @@ export const metadata: Metadata = {
     "Se kommande utdelningar, X-datum och utdelningsbelopp för svenska aktier i Utdelning.nu:s utdelningskalender.",
   alternates: {
     canonical: "/",
+  },
+  openGraph: {
+    type: "website",
+    locale: "sv_SE",
+    url: siteUrl,
+    siteName: "Utdelning.nu",
+    title: "Utdelning.nu - Utdelningskalender och X-datum",
+    description:
+      "Se kommande utdelningar, X-datum och utdelningsbelopp for svenska aktier.",
+    images: [defaultShareImage],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Utdelning.nu - Utdelningskalender och X-datum",
+    description:
+      "Se kommande utdelningar, X-datum och utdelningsbelopp for svenska aktier.",
+    images: [defaultTwitterImage],
   },
 };
 

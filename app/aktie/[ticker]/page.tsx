@@ -10,6 +10,7 @@ import { relatedStocks } from "@/data/related-stocks";
 import { stockYields } from "@/data/stock-yields";
 import { MobileBottomNav } from "@/components/layout/mobile-bottom-nav";
 import { Topbar } from "@/components/layout/topbar";
+import { defaultShareImage, defaultTwitterImage } from "@/lib/share-metadata";
 import type { Dividend } from "@/types/dividend";
 
 const SITE_URL = "https://utdelning.nu";
@@ -225,11 +226,13 @@ export async function generateMetadata({
       siteName: "Utdelning.nu",
       locale: "sv_SE",
       type: "website",
+      images: [defaultShareImage],
     },
     twitter: {
       card: "summary_large_image",
       title,
       description,
+      images: [defaultTwitterImage],
     },
     robots: {
       index: true,

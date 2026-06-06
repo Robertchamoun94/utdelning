@@ -7,6 +7,7 @@ import { Topbar } from "@/components/layout/topbar";
 import { FormattedNewsTitle } from "@/components/news/formatted-news-title";
 import { getMakroNewsPosts, type MakroNewsPost } from "@/lib/makro-news";
 import { getPlainNewsTitle } from "@/lib/news-title-formatting";
+import { defaultShareImage, defaultTwitterImage } from "@/lib/share-metadata";
 
 export const dynamic = "force-dynamic";
 
@@ -25,6 +26,14 @@ export const metadata = {
     title: "Nyheter | Utdelning.nu",
     description:
       "Följ nyheter och analyser om räntor, inflation, likviditet, kreditstress och marknadsläge.",
+    images: [defaultShareImage],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Nyheter | Utdelning.nu",
+    description:
+      "Folj nyheter och analyser om rantor, inflation, likviditet, kreditstress och marknadslage.",
+    images: [defaultTwitterImage],
   },
 };
 

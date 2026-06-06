@@ -3,6 +3,7 @@ import { MobileMenu } from "@/components/layout/mobile-menu";
 import { CookieBanner } from "@/components/cookie-banner";
 import type { Metadata, Viewport } from "next";
 import Script from "next/script";
+import { defaultShareImage, defaultTwitterImage } from "@/lib/share-metadata";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -38,12 +39,14 @@ export const metadata: Metadata = {
     title: "Utdelning.nu – Kommande utdelningar och X-datum",
     description:
       "Följ kommande utdelningar, X-datum och utdelningsbelopp för svenska aktier i en enkel utdelningskalender.",
+    images: [defaultShareImage],
   },
   twitter: {
     card: "summary_large_image",
     title: "Utdelning.nu – Kommande utdelningar och X-datum",
     description:
       "Se kommande utdelningar, X-datum och utdelningsbelopp för svenska aktier.",
+    images: [defaultTwitterImage],
   },
   robots: {
     index: true,
