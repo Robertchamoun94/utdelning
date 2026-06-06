@@ -124,7 +124,7 @@ export default async function NewsArticlePage({ params }: PageProps) {
 
       <article className="mx-auto max-w-[920px] px-4 py-5 lg:px-8 lg:py-10">
         <Link
-          href="/"
+          href="/nyheter"
           className="mb-5 inline-flex items-center gap-2 text-sm font-black text-slate-600 transition hover:text-emerald-700"
         >
           <ArrowLeft size={17} />

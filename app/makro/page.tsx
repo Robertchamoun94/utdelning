@@ -107,21 +107,23 @@ function LeadArticle({ article }: { article: MakroNewsPost }) {
   return (
     <article className="border border-slate-200 bg-white">
       {article.imageUrl && (
-        <ArticleImage article={article} className="h-64 lg:h-[360px]" priority />
+        <Link href={`/nyheter/${article.slug}`} aria-label={getPlainNewsTitle(article.title)}>
+          <ArticleImage article={article} className="h-64 lg:h-[360px]" priority />
+        </Link>
       )}
 
       <div className="p-4 lg:p-5">
         <ArticleMeta article={article} />
 
-        <Link href={`/nyheter/${article.slug}`}>
+        <Link href={`/nyheter/${article.slug}`} className="block">
           <h2 className="mt-3 text-3xl font-black leading-[1.02] tracking-tight transition hover:text-emerald-700 lg:text-5xl">
             <FormattedNewsTitle title={article.title} />
           </h2>
-        </Link>
 
-        <p className="mt-4 text-base font-semibold leading-7 text-slate-700">
-          {article.excerpt}
-        </p>
+          <p className="mt-4 text-base font-semibold leading-7 text-slate-700 transition hover:text-emerald-700">
+            {article.excerpt}
+          </p>
+        </Link>
       </div>
     </article>
   );
@@ -130,20 +132,24 @@ function LeadArticle({ article }: { article: MakroNewsPost }) {
 function SecondaryArticle({ article }: { article: MakroNewsPost }) {
   return (
     <article className="border border-slate-200 bg-white">
-      {article.imageUrl && <ArticleImage article={article} className="h-40" />}
+      {article.imageUrl && (
+        <Link href={`/nyheter/${article.slug}`} aria-label={getPlainNewsTitle(article.title)}>
+          <ArticleImage article={article} className="h-40" />
+        </Link>
+      )}
 
       <div className="p-4">
         <ArticleMeta article={article} compact />
 
-        <Link href={`/nyheter/${article.slug}`}>
+        <Link href={`/nyheter/${article.slug}`} className="block">
           <h3 className="mt-3 text-2xl font-black leading-tight tracking-tight transition hover:text-emerald-700">
             <FormattedNewsTitle title={article.title} />
           </h3>
-        </Link>
 
-        <p className="mt-3 line-clamp-3 text-sm font-semibold leading-6 text-slate-600">
-          {article.excerpt}
-        </p>
+          <p className="mt-3 line-clamp-3 text-sm font-semibold leading-6 text-slate-600 transition hover:text-emerald-700">
+            {article.excerpt}
+          </p>
+        </Link>
       </div>
     </article>
   );
@@ -156,20 +162,24 @@ function NewsRow({ article }: { article: MakroNewsPost }) {
         article.imageUrl ? "sm:grid-cols-[140px_1fr]" : ""
       }`}
     >
-      {article.imageUrl && <ArticleImage article={article} className="h-28 sm:h-24" />}
+      {article.imageUrl && (
+        <Link href={`/nyheter/${article.slug}`} aria-label={getPlainNewsTitle(article.title)}>
+          <ArticleImage article={article} className="h-28 sm:h-24" />
+        </Link>
+      )}
 
       <div>
         <ArticleMeta article={article} compact />
 
-        <Link href={`/nyheter/${article.slug}`}>
+        <Link href={`/nyheter/${article.slug}`} className="block">
           <h3 className="mt-2 text-xl font-black leading-tight tracking-tight transition hover:text-emerald-700">
             <FormattedNewsTitle title={article.title} />
           </h3>
-        </Link>
 
-        <p className="mt-2 line-clamp-2 text-sm font-semibold leading-6 text-slate-600">
-          {article.excerpt}
-        </p>
+          <p className="mt-2 line-clamp-2 text-sm font-semibold leading-6 text-slate-600 transition hover:text-emerald-700">
+            {article.excerpt}
+          </p>
+        </Link>
       </div>
     </article>
   );
