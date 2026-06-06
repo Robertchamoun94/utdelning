@@ -61,7 +61,10 @@ export function ReturnCalculator() {
           <ArrowLeft size={18} />
         </Link>
 
-        <h1 className="text-sm font-black">Räkna avkastning</h1>
+        <Link href="/" className="text-lg font-black tracking-tight">
+          <span className="text-emerald-500">utdelning</span>
+          <span>.nu</span>
+        </Link>
       </header>
 
       <section className="h-[calc(100dvh-40px)] overflow-y-auto px-2 py-2 pb-[62px] lg:mx-auto lg:h-[calc(100dvh-64px)] lg:max-w-[1520px] lg:overflow-hidden lg:p-4">
@@ -156,12 +159,6 @@ export function ReturnCalculator() {
             </aside>
 
             <div className="grid grid-cols-2 gap-2 lg:col-span-2 lg:grid-cols-4 lg:gap-3">
-              <MobileResult
-                title="Med avkastning"
-                value={formatSek(finalInvested)}
-                green
-              />
-
               <MobileResult title="Insättning" value={formatSek(totalDeposits)} />
 
               <MobileResult title="Utan avkastning" value={formatSek(finalSaved)} />
@@ -169,6 +166,12 @@ export function ReturnCalculator() {
               <MobileResult
                 title="Skillnad"
                 value={"+" + formatSek(difference)}
+                green
+              />
+
+              <MobileResult
+                title="Med avkastning"
+                value={formatSek(finalInvested)}
                 green
               />
             </div>

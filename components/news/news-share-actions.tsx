@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Check, Copy, Mail, Share2 } from "lucide-react";
+import { Check, Copy, Share2 } from "lucide-react";
 
 type NewsShareActionsProps = {
   title: string;
@@ -13,7 +13,6 @@ export function NewsShareActions({ title, excerpt, url }: NewsShareActionsProps)
   const [copied, setCopied] = useState(false);
   const encodedUrl = encodeURIComponent(url);
   const encodedTitle = encodeURIComponent(title);
-  const encodedText = encodeURIComponent(`${title} - ${excerpt}`);
 
   async function handleShare() {
     if (navigator.share) {
@@ -92,15 +91,6 @@ export function NewsShareActions({ title, excerpt, url }: NewsShareActionsProps)
           title="X"
         >
           X
-        </a>
-
-        <a
-          href={`mailto:?subject=${encodedTitle}&body=${encodedText}%0A%0A${encodedUrl}`}
-          className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-700 transition hover:border-emerald-300 hover:text-emerald-700"
-          aria-label="Dela via e-post"
-          title="E-post"
-        >
-          <Mail size={17} />
         </a>
       </div>
     </section>
