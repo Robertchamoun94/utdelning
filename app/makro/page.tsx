@@ -21,7 +21,7 @@ export const metadata = {
   openGraph: {
     type: "website",
     locale: "sv_SE",
-    url: "https://utdelning.nu/nyheter",
+    url: "https://www.utdelning.nu/nyheter",
     siteName: "Utdelning.nu",
     title: "Nyheter | Utdelning.nu",
     description:

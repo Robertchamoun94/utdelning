@@ -2,7 +2,7 @@ import type { MetadataRoute } from "next";
 import { dividends } from "@/data/dividends";
 import { getMakroNewsPosts } from "@/lib/makro-news";
 
-const SITE_URL = "https://utdelning.nu";
+const SITE_URL = "https://www.utdelning.nu";
 
 function createStockSlug(value: string) {
   return value

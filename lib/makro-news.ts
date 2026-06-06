@@ -36,7 +36,7 @@ const NEWS_FILE = path.join(process.cwd(), "data", "makro-news.json");
 const UPLOAD_DIR = path.join(process.cwd(), "public", "uploads", "makro");
 const BLOB_NEWS_PATH = "makro/posts.json";
 const BLOB_IMAGE_PATH = "makro/images";
-const SITE_URL = "https://utdelning.nu";
+const SITE_URL = "https://www.utdelning.nu";
 
 export async function getMakroNewsPosts(options?: {
   includeDrafts?: boolean;

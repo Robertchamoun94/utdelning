@@ -1,4 +1,4 @@
-export const siteUrl = "https://utdelning.nu";
+export const siteUrl = "https://www.utdelning.nu";
 
 export const defaultShareImage = {
   url: `${siteUrl}/og-image.png`,

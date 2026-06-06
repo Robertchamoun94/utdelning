@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { ReturnCalculator } from "@/components/calculators/return-calculator";
 import { defaultShareImage, defaultTwitterImage } from "@/lib/share-metadata";
 
-const siteUrl = "https://utdelning.nu";
+const siteUrl = "https://www.utdelning.nu";
 
 export const metadata: Metadata = {
   title: "Räkna avkastning - kalkylator för ränta på ränta",

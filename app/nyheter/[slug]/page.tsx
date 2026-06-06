@@ -103,7 +103,7 @@ export default async function NewsArticlePage({ params }: PageProps) {
   const contentBlocks = parseNewsContent(post.content);
   const jsonLd = createArticleJsonLd(post);
   const plainTitle = getPlainNewsTitle(post.title);
-  const articleUrl = `https://utdelning.nu/nyheter/${post.slug}`;
+  const articleUrl = `https://www.utdelning.nu/nyheter/${post.slug}`;
 
   return (
     <main className="min-h-dvh bg-white pb-20 text-slate-950 lg:pb-0">

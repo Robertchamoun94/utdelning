@@ -13,7 +13,7 @@ import { Topbar } from "@/components/layout/topbar";
 import { defaultShareImage, defaultTwitterImage } from "@/lib/share-metadata";
 import type { Dividend } from "@/types/dividend";
 
-const SITE_URL = "https://utdelning.nu";
+const SITE_URL = "https://www.utdelning.nu";
 
 function createStockSlug(value: string) {
   return value

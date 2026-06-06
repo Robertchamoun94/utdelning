@@ -7,7 +7,7 @@ import { defaultShareImage, defaultTwitterImage } from "@/lib/share-metadata";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://utdelning.nu"),
+  metadataBase: new URL("https://www.utdelning.nu"),
   title: {
     default: "Utdelning.nu – Kommande utdelningar och X-datum för svenska aktier",
     template: "%s | Utdelning.nu",
@@ -34,7 +34,7 @@ export const metadata: Metadata = {
   openGraph: {
     type: "website",
     locale: "sv_SE",
-    url: "https://utdelning.nu",
+    url: "https://www.utdelning.nu",
     siteName: "Utdelning.nu",
     title: "Utdelning.nu – Kommande utdelningar och X-datum",
     description:

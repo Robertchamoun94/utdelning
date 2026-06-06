@@ -3,7 +3,7 @@ import { DividendDashboard } from "@/components/dividends/dividend-dashboard";
 import { fetchUpcomingDividends } from "@/lib/api/dividends";
 import { defaultShareImage, defaultTwitterImage } from "@/lib/share-metadata";
 
-const siteUrl = "https://utdelning.nu";
+const siteUrl = "https://www.utdelning.nu";
 
 export const dynamic = "force-dynamic";
 
