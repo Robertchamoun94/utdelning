@@ -1,17 +1,19 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import {
   ArrowRight,
   Eye,
   ImagePlus,
   Lock,
+  Palette,
   Pencil,
   Send,
   Trash2,
   X,
 } from "lucide-react";
+import { FormattedNewsTitle } from "@/components/news/formatted-news-title";
 import type { MakroNewsPost } from "@/lib/makro-news";
 
 type FormState = {
@@ -39,8 +41,10 @@ const initialForm: FormState = {
 };
 
 export function MakroNewsAdmin() {
+  const titleInputRef = useRef<HTMLInputElement>(null);
   const [password, setPassword] = useState("");
   const [form, setForm] = useState<FormState>(initialForm);
+  const [redTitleText, setRedTitleText] = useState("");
   const [editingPostId, setEditingPostId] = useState<string | null>(null);
   const [image, setImage] = useState<File | null>(null);
   const [posts, setPosts] = useState<MakroNewsPost[]>([]);
@@ -144,11 +148,13 @@ export function MakroNewsAdmin() {
     });
     setEditingPostId(null);
     setImage(null);
+    setRedTitleText("");
   }
 
   function startEditing(post: MakroNewsPost) {
     setEditingPostId(post.id);
     setImage(null);
+    setRedTitleText("");
     setMessage("Redigerar vald nyhet.");
     setForm({
       title: post.title,
@@ -162,6 +168,36 @@ export function MakroNewsAdmin() {
       status: post.status,
     });
     window.scrollTo({ top: 0, behavior: "smooth" });
+  }
+
+  function markSelectedTitleTextRed() {
+    const textToMark = redTitleText.trim();
+
+    if (!textToMark) {
+      setMessage("Skriv ordet eller frasen som ska bli röd.");
+      titleInputRef.current?.focus();
+      return;
+    }
+
+    if (form.title.includes(`[red]${textToMark}[/red]`)) {
+      setMessage("Den texten är redan markerad röd.");
+      return;
+    }
+
+    const titleIndex = form.title.toLowerCase().indexOf(textToMark.toLowerCase());
+
+    if (titleIndex === -1) {
+      setMessage("Texten hittades inte i rubriken.");
+      titleInputRef.current?.focus();
+      return;
+    }
+
+    const originalText = form.title.slice(titleIndex, titleIndex + textToMark.length);
+    const nextTitle = `${form.title.slice(0, titleIndex)}[red]${originalText}[/red]${form.title.slice(titleIndex + textToMark.length)}`;
+
+    setForm((current) => ({ ...current, title: nextTitle }));
+    setMessage("Markerad rubriktext blir röd på nyhetssidan.");
+    setRedTitleText("");
   }
 
   async function deletePost(post: MakroNewsPost) {
@@ -266,6 +302,7 @@ export function MakroNewsAdmin() {
           <label className="grid gap-2 text-sm font-bold text-slate-700">
             Titel
             <input
+              ref={titleInputRef}
               value={form.title}
               onChange={(event) =>
                 setForm((current) => ({ ...current, title: event.target.value }))
@@ -274,6 +311,39 @@ export function MakroNewsAdmin() {
               placeholder="Ex. Räntor och likviditet styr marknaden"
             />
           </label>
+
+          <div className="grid gap-2 rounded-2xl border border-slate-200 bg-slate-50 p-3">
+            <label className="grid gap-2 text-sm font-bold text-slate-700">
+              Rubrikord i rött
+              <div className="flex flex-col gap-2 sm:flex-row">
+                <input
+                  value={redTitleText}
+                  onChange={(event) => setRedTitleText(event.target.value)}
+                  className="h-10 flex-1 rounded-xl border border-slate-200 bg-white px-3 text-sm outline-none focus:border-red-400"
+                  placeholder="Ex. JUST NU"
+                />
+                <button
+                  type="button"
+                  onClick={markSelectedTitleTextRed}
+                  className="inline-flex h-10 items-center justify-center gap-2 rounded-xl border border-red-100 bg-red-50 px-3 text-xs font-black text-red-700 transition hover:border-red-200"
+                >
+                  <Palette size={14} />
+                  Markera rött
+                </button>
+              </div>
+            </label>
+
+            {form.title && (
+              <div className="rounded-xl border border-slate-200 bg-white px-3 py-2">
+                <p className="text-xs font-bold uppercase tracking-[0.12em] text-slate-400">
+                  Rubrikpreview
+                </p>
+                <p className="mt-1 text-base font-black leading-5 text-slate-950">
+                  <FormattedNewsTitle title={form.title} />
+                </p>
+              </div>
+            )}
+          </div>
 
           <label className="grid gap-2 text-sm font-bold text-slate-700">
             SEO-ingress
@@ -473,7 +543,7 @@ export function MakroNewsAdmin() {
                     {post.category}
                   </p>
                   <h3 className="mt-2 text-sm font-black leading-5">
-                    {post.title}
+                    <FormattedNewsTitle title={post.title} />
                   </h3>
                 </div>
                 <span

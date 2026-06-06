@@ -1,6 +1,7 @@
 import { get, put } from "@vercel/blob";
 import { promises as fs } from "fs";
 import path from "path";
+import { getPlainNewsTitle } from "@/lib/news-title-formatting";
 
 export type MakroNewsStatus = "draft" | "published";
 
@@ -62,7 +63,8 @@ export async function createMakroNewsPost(input: MakroNewsInput) {
   const publishedAt = input.publishedAt
     ? new Date(input.publishedAt).toISOString()
     : now;
-  const baseSlug = createSlug(input.title);
+  const plainTitle = getPlainNewsTitle(input.title);
+  const baseSlug = createSlug(plainTitle);
   const slug = createUniqueSlug(baseSlug, posts);
 
   const post: MakroNewsPost = {
@@ -75,7 +77,7 @@ export async function createMakroNewsPost(input: MakroNewsInput) {
     updatedAt: now,
     author: cleanText(input.author || "Utdelning.nu"),
     imageUrl: input.imageUrl?.trim() || "",
-    imageAlt: cleanText(input.imageAlt || input.title),
+    imageAlt: cleanText(input.imageAlt || plainTitle),
     content: input.content.trim(),
     status: input.status || "published",
   };
@@ -96,6 +98,7 @@ export async function updateMakroNewsPost(
   }
 
   const existingPost = posts[postIndex];
+  const plainTitle = getPlainNewsTitle(input.title);
   const publishedAt = input.publishedAt
     ? new Date(input.publishedAt).toISOString()
     : existingPost.publishedAt;
@@ -109,7 +112,7 @@ export async function updateMakroNewsPost(
     updatedAt: new Date().toISOString(),
     author: cleanText(input.author || "Utdelning.nu"),
     imageUrl: input.imageUrl?.trim() || "",
-    imageAlt: cleanText(input.imageAlt || input.title),
+    imageAlt: cleanText(input.imageAlt || plainTitle),
     content: input.content.trim(),
     status: input.status || "published",
   };
@@ -184,7 +187,7 @@ export function createArticleJsonLd(post: MakroNewsPost) {
   return {
     "@context": "https://schema.org",
     "@type": "NewsArticle",
-    headline: post.title,
+    headline: getPlainNewsTitle(post.title),
     description: post.excerpt,
     datePublished: post.publishedAt,
     dateModified: post.updatedAt,

@@ -5,6 +5,8 @@ import { notFound } from "next/navigation";
 import { ArrowLeft, CalendarDays, Clock3 } from "lucide-react";
 import { MobileBottomNav } from "@/components/layout/mobile-bottom-nav";
 import { Topbar } from "@/components/layout/topbar";
+import { FormattedNewsTitle } from "@/components/news/formatted-news-title";
+import { getPlainNewsTitle } from "@/lib/news-title-formatting";
 import {
   createArticleJsonLd,
   getAbsoluteUrl,
@@ -38,9 +40,10 @@ export async function generateMetadata({
 
   const url = `/nyheter/${post.slug}`;
   const image = getAbsoluteUrl(post.imageUrl);
+  const plainTitle = getPlainNewsTitle(post.title);
 
   return {
-    title: post.title,
+    title: plainTitle,
     description: post.excerpt,
     authors: [{ name: post.author }],
     alternates: {
@@ -51,7 +54,7 @@ export async function generateMetadata({
       locale: "sv_SE",
       url,
       siteName: "Utdelning.nu",
-      title: post.title,
+      title: plainTitle,
       description: post.excerpt,
       publishedTime: post.publishedAt,
       modifiedTime: post.updatedAt,
@@ -61,7 +64,7 @@ export async function generateMetadata({
             images: [
               {
                 url: image,
-                alt: post.imageAlt || post.title,
+                alt: post.imageAlt || plainTitle,
               },
             ],
           }
@@ -69,7 +72,7 @@ export async function generateMetadata({
     },
     twitter: {
       card: image ? "summary_large_image" : "summary",
-      title: post.title,
+      title: plainTitle,
       description: post.excerpt,
       ...(image ? { images: [image] } : {}),
     },
@@ -130,7 +133,7 @@ export default async function NewsArticlePage({ params }: PageProps) {
             <div className="relative h-72 w-full lg:h-96">
               <Image
                 src={post.imageUrl}
-                alt={post.imageAlt || post.title}
+                alt={post.imageAlt || getPlainNewsTitle(post.title)}
                 fill
                 priority
                 sizes="(min-width: 1024px) 920px, 100vw"
@@ -160,7 +163,7 @@ export default async function NewsArticlePage({ params }: PageProps) {
             </div>
 
             <h1 className="mt-5 text-3xl font-black tracking-tight lg:text-5xl">
-              {post.title}
+              <FormattedNewsTitle title={post.title} />
             </h1>
 
             <p className="mt-5 text-lg font-semibold leading-8 text-slate-600">

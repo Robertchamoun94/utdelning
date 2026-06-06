@@ -1,9 +1,11 @@
 import Link from "next/link";
 import Image from "next/image";
-import { CalendarDays, Clock3, Newspaper, TrendingUp } from "lucide-react";
+import { CalendarDays, Clock3, TrendingUp } from "lucide-react";
 import { MobileBottomNav } from "@/components/layout/mobile-bottom-nav";
 import { Topbar } from "@/components/layout/topbar";
+import { FormattedNewsTitle } from "@/components/news/formatted-news-title";
 import { getMakroNewsPosts, type MakroNewsPost } from "@/lib/makro-news";
+import { getPlainNewsTitle } from "@/lib/news-title-formatting";
 
 export const dynamic = "force-dynamic";
 
@@ -99,14 +101,16 @@ export default async function MakroPage() {
 function LeadArticle({ article }: { article: MakroNewsPost }) {
   return (
     <article className="border border-slate-200 bg-white">
-      <ArticleImage article={article} className="h-64 lg:h-[360px]" priority />
+      {article.imageUrl && (
+        <ArticleImage article={article} className="h-64 lg:h-[360px]" priority />
+      )}
 
       <div className="p-4 lg:p-5">
         <ArticleMeta article={article} />
 
         <Link href={`/nyheter/${article.slug}`}>
           <h2 className="mt-3 text-3xl font-black leading-[1.02] tracking-tight transition hover:text-emerald-700 lg:text-5xl">
-            {article.title}
+            <FormattedNewsTitle title={article.title} />
           </h2>
         </Link>
 
@@ -121,14 +125,14 @@ function LeadArticle({ article }: { article: MakroNewsPost }) {
 function SecondaryArticle({ article }: { article: MakroNewsPost }) {
   return (
     <article className="border border-slate-200 bg-white">
-      <ArticleImage article={article} className="h-40" />
+      {article.imageUrl && <ArticleImage article={article} className="h-40" />}
 
       <div className="p-4">
         <ArticleMeta article={article} compact />
 
         <Link href={`/nyheter/${article.slug}`}>
           <h3 className="mt-3 text-2xl font-black leading-tight tracking-tight transition hover:text-emerald-700">
-            {article.title}
+            <FormattedNewsTitle title={article.title} />
           </h3>
         </Link>
 
@@ -142,15 +146,19 @@ function SecondaryArticle({ article }: { article: MakroNewsPost }) {
 
 function NewsRow({ article }: { article: MakroNewsPost }) {
   return (
-    <article className="grid gap-3 p-4 transition hover:bg-slate-50 sm:grid-cols-[140px_1fr]">
-      <ArticleImage article={article} className="h-28 sm:h-24" />
+    <article
+      className={`grid gap-3 p-4 transition hover:bg-slate-50 ${
+        article.imageUrl ? "sm:grid-cols-[140px_1fr]" : ""
+      }`}
+    >
+      {article.imageUrl && <ArticleImage article={article} className="h-28 sm:h-24" />}
 
       <div>
         <ArticleMeta article={article} compact />
 
         <Link href={`/nyheter/${article.slug}`}>
           <h3 className="mt-2 text-xl font-black leading-tight tracking-tight transition hover:text-emerald-700">
-            {article.title}
+            <FormattedNewsTitle title={article.title} />
           </h3>
         </Link>
 
@@ -177,7 +185,7 @@ function LatestPanel({ articles }: { articles: MakroNewsPost[] }) {
                 {formatTime(article.publishedAt)}
               </span>
               <span className="text-sm font-black leading-5">
-                {article.title}
+                <FormattedNewsTitle title={article.title} />
               </span>
             </Link>
           </li>
@@ -202,7 +210,7 @@ function MostReadPanel({ articles }: { articles: MakroNewsPost[] }) {
                 {index + 1}
               </span>
               <span className="text-sm font-black leading-5">
-                {article.title}
+                <FormattedNewsTitle title={article.title} />
               </span>
             </Link>
           </li>
@@ -241,21 +249,11 @@ function ArticleImage({
   className: string;
   priority?: boolean;
 }) {
-  if (!article.imageUrl) {
-    return (
-      <div
-        className={`flex items-center justify-center bg-slate-950 text-emerald-400 ${className}`}
-      >
-        <Newspaper size={32} />
-      </div>
-    );
-  }
-
   return (
     <div className={`relative overflow-hidden bg-slate-200 ${className}`}>
       <Image
         src={article.imageUrl}
-        alt={article.imageAlt || article.title}
+        alt={article.imageAlt || getPlainNewsTitle(article.title)}
         fill
         priority={priority}
         sizes="(min-width: 1024px) 760px, 100vw"
