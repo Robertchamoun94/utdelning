@@ -66,19 +66,6 @@ const websiteSchema = {
   inLanguage: "sv-SE",
 };
 
-const faqSchema = {
-  "@context": "https://schema.org",
-  "@type": "FAQPage",
-  mainEntity: faqItems.map((item) => ({
-    "@type": "Question",
-    name: item.question,
-    acceptedAnswer: {
-      "@type": "Answer",
-      text: item.answer,
-    },
-  })),
-};
-
 export default async function UtdelningskalenderPage() {
   const dividends = await fetchUpcomingDividends();
 
@@ -87,10 +74,6 @@ export default async function UtdelningskalenderPage() {
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteSchema) }}
-      />
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
       />
 
       <DividendDashboard dividends={dividends} />
