@@ -36,7 +36,6 @@ export async function POST(request: Request) {
   const title = getFormValue(formData, "title");
   const excerpt = getFormValue(formData, "excerpt");
   const category = getFormValue(formData, "category");
-  const publishedAt = getFormValue(formData, "publishedAt");
   const author = getFormValue(formData, "author");
   const imageAlt = getFormValue(formData, "imageAlt");
   const content = getFormValue(formData, "content");
@@ -67,7 +66,6 @@ export async function POST(request: Request) {
       title,
       excerpt,
       category,
-      publishedAt,
       author,
       imageUrl,
       imageAlt,
@@ -98,7 +96,6 @@ export async function PUT(request: Request) {
   const title = getFormValue(formData, "title");
   const excerpt = getFormValue(formData, "excerpt");
   const category = getFormValue(formData, "category");
-  const publishedAt = getFormValue(formData, "publishedAt");
   const author = getFormValue(formData, "author");
   const imageAlt = getFormValue(formData, "imageAlt");
   const content = getFormValue(formData, "content");
@@ -129,7 +126,6 @@ export async function PUT(request: Request) {
       title,
       excerpt,
       category,
-      publishedAt,
       author,
       imageUrl,
       imageAlt,

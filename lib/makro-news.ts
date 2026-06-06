@@ -43,13 +43,9 @@ export async function getMakroNewsPosts(options?: {
 }) {
   const posts = await readNewsFile();
 
-  return posts
-    .filter((post) => options?.includeDrafts || post.status === "published")
-    .sort(
-      (first, second) =>
-        new Date(second.publishedAt).getTime() -
-        new Date(first.publishedAt).getTime()
-    );
+  return sortMakroNewsPosts(
+    posts.filter((post) => options?.includeDrafts || post.status === "published")
+  );
 }
 
 export async function getMakroNewsPost(slug: string) {
@@ -99,9 +95,14 @@ export async function updateMakroNewsPost(
 
   const existingPost = posts[postIndex];
   const plainTitle = getPlainNewsTitle(input.title);
-  const publishedAt = input.publishedAt
-    ? new Date(input.publishedAt).toISOString()
-    : existingPost.publishedAt;
+  const now = new Date().toISOString();
+  const nextStatus = input.status || "published";
+  const publishedAt =
+    existingPost.status === "draft" && nextStatus === "published"
+      ? now
+      : input.publishedAt
+        ? new Date(input.publishedAt).toISOString()
+        : existingPost.publishedAt;
 
   const updatedPost: MakroNewsPost = {
     ...existingPost,
@@ -109,12 +110,12 @@ export async function updateMakroNewsPost(
     excerpt: cleanText(input.excerpt),
     category: cleanText(input.category),
     publishedAt,
-    updatedAt: new Date().toISOString(),
+    updatedAt: now,
     author: cleanText(input.author || "Utdelning.nu"),
     imageUrl: input.imageUrl?.trim() || "",
     imageAlt: cleanText(input.imageAlt || plainTitle),
     content: input.content.trim(),
-    status: input.status || "published",
+    status: nextStatus,
   };
 
   posts[postIndex] = updatedPost;
@@ -263,8 +264,10 @@ async function readNewsFile(): Promise<MakroNewsPost[]> {
 }
 
 async function writeNewsFile(posts: MakroNewsPost[]) {
+  const sortedPosts = sortMakroNewsPosts(posts);
+
   if (hasBlobStorage()) {
-    await put(BLOB_NEWS_PATH, `${JSON.stringify(posts, null, 2)}\n`, {
+    await put(BLOB_NEWS_PATH, `${JSON.stringify(sortedPosts, null, 2)}\n`, {
       access: "private",
       allowOverwrite: true,
       contentType: "application/json; charset=utf-8",
@@ -274,7 +277,7 @@ async function writeNewsFile(posts: MakroNewsPost[]) {
   }
 
   await fs.mkdir(path.dirname(NEWS_FILE), { recursive: true });
-  await fs.writeFile(NEWS_FILE, `${JSON.stringify(posts, null, 2)}\n`, "utf8");
+  await fs.writeFile(NEWS_FILE, `${JSON.stringify(sortedPosts, null, 2)}\n`, "utf8");
 }
 
 async function readNewsBlob() {
@@ -305,4 +308,22 @@ function getSafeImageExtension(file: File) {
   };
 
   return mimeMap[file.type] || "";
+}
+
+function sortMakroNewsPosts(posts: MakroNewsPost[]) {
+  return [...posts].sort((first, second) => {
+    const secondPublished = getPostSortTime(second.publishedAt);
+    const firstPublished = getPostSortTime(first.publishedAt);
+
+    if (secondPublished !== firstPublished) {
+      return secondPublished - firstPublished;
+    }
+
+    return getPostSortTime(second.updatedAt) - getPostSortTime(first.updatedAt);
+  });
+}
+
+function getPostSortTime(value: string) {
+  const timestamp = new Date(value).getTime();
+  return Number.isFinite(timestamp) ? timestamp : 0;
 }

@@ -20,7 +20,6 @@ type FormState = {
   title: string;
   excerpt: string;
   category: string;
-  publishedAt: string;
   author: string;
   imageUrl: string;
   imageAlt: string;
@@ -32,7 +31,6 @@ const initialForm: FormState = {
   title: "",
   excerpt: "",
   category: "Makroekonomi",
-  publishedAt: new Date().toISOString().slice(0, 16),
   author: "Utdelning.nu",
   imageUrl: "",
   imageAlt: "",
@@ -142,10 +140,7 @@ export function MakroNewsAdmin() {
   }
 
   function resetForm() {
-    setForm({
-      ...initialForm,
-      publishedAt: new Date().toISOString().slice(0, 16),
-    });
+    setForm(initialForm);
     setEditingPostId(null);
     setImage(null);
     setRedTitleText("");
@@ -160,7 +155,6 @@ export function MakroNewsAdmin() {
       title: post.title,
       excerpt: post.excerpt,
       category: post.category,
-      publishedAt: toDateTimeLocal(post.publishedAt),
       author: post.author,
       imageUrl: post.imageUrl,
       imageAlt: post.imageAlt,
@@ -361,7 +355,7 @@ export function MakroNewsAdmin() {
             />
           </label>
 
-          <div className="grid gap-4 md:grid-cols-3">
+          <div className="grid gap-4 md:grid-cols-2">
             <label className="grid gap-2 text-sm font-bold text-slate-700">
               Kategori
               <input
@@ -370,21 +364,6 @@ export function MakroNewsAdmin() {
                   setForm((current) => ({
                     ...current,
                     category: event.target.value,
-                  }))
-                }
-                className="h-11 rounded-xl border border-slate-200 bg-white px-3 text-sm outline-none focus:border-emerald-500"
-              />
-            </label>
-
-            <label className="grid gap-2 text-sm font-bold text-slate-700">
-              Publiceringsdatum
-              <input
-                type="datetime-local"
-                value={form.publishedAt}
-                onChange={(event) =>
-                  setForm((current) => ({
-                    ...current,
-                    publishedAt: event.target.value,
                   }))
                 }
                 className="h-11 rounded-xl border border-slate-200 bg-white px-3 text-sm outline-none focus:border-emerald-500"
@@ -479,7 +458,12 @@ export function MakroNewsAdmin() {
               }
               rows={12}
               className="rounded-xl border border-slate-200 bg-white px-3 py-3 text-sm leading-7 outline-none focus:border-emerald-500"
-              placeholder="Skriv nyheten. Gör ny paragraf med en tom rad."
+              placeholder={`Skriv nyheten direkt här.
+
+Tips:
+Skriv rubriker på egna rader.
+Skriv nya stycken på nya rader.
+Skriv Sammanfattning: följt av rader som X-datum / 9 juni 2026 för en faktaruta.`}
             />
           </label>
         </div>
@@ -637,13 +621,6 @@ async function prepareImageForUpload(file: File) {
   return new File([blob], `${stripExtension(file.name)}.jpg`, {
     type: "image/jpeg",
   });
-}
-
-function toDateTimeLocal(value: string) {
-  const date = new Date(value);
-  const offset = date.getTimezoneOffset();
-  const localDate = new Date(date.getTime() - offset * 60_000);
-  return localDate.toISOString().slice(0, 16);
 }
 
 function stripExtension(fileName: string) {
