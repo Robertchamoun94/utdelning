@@ -1,5 +1,6 @@
 import Link from "next/link";
 import Image from "next/image";
+import { permanentRedirect } from "next/navigation";
 import { CalendarDays, Clock3, TrendingUp } from "lucide-react";
 import { MobileBottomNav } from "@/components/layout/mobile-bottom-nav";
 import { Topbar } from "@/components/layout/topbar";
@@ -27,7 +28,11 @@ export const metadata = {
   },
 };
 
-export default async function MakroPage() {
+export default function MakroPage() {
+  permanentRedirect("/nyheter");
+}
+
+export async function NewsIndexPage() {
   const posts = await getMakroNewsPosts();
   const [leadArticle, secondArticle, thirdArticle, ...feedArticles] = posts;
   const latestArticles = posts.slice(0, 6);

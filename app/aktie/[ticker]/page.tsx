@@ -1,8 +1,10 @@
 import Link from "next/link";
+import Image from "next/image";
 import { notFound } from "next/navigation";
 import { ArrowLeft } from "lucide-react";
 import type { Metadata } from "next";
 import { dividends } from "@/data/dividends";
+import { stocks } from "@/data/stocks";
 import { stockContent } from "@/data/stock-content";
 import { relatedStocks } from "@/data/related-stocks";
 import { stockYields } from "@/data/stock-yields";
@@ -59,7 +61,6 @@ function formatDividendYield(slug: string) {
   })} %`;
 }
 
-
 function isLogoUrl(logo: string) {
   return logo.startsWith("http");
 }
@@ -68,6 +69,102 @@ function getStockEvents(slug: string) {
   return dividends
     .filter((dividend) => createStockSlug(dividend.company) === slug)
     .sort((a, b) => new Date(a.xDate).getTime() - new Date(b.xDate).getTime());
+}
+
+function getStockProfile(slug: string) {
+  return stocks.find((stock) => createStockSlug(stock.company) === slug);
+}
+
+function getRelatedStockLinks(slugs: string[]) {
+  return slugs
+    .map((slug) => {
+      const dividend = dividends.find((item) => createStockSlug(item.company) === slug);
+
+      return dividend
+        ? {
+            slug,
+            company: dividend.company,
+          }
+        : null;
+    })
+    .filter(Boolean) as Array<{ slug: string; company: string }>;
+}
+
+function buildStructuredData({
+  stock,
+  stockEvents,
+  ticker,
+  dividendYield,
+  related,
+}: {
+  stock: Dividend;
+  stockEvents: Dividend[];
+  ticker: string;
+  dividendYield: string;
+  related: Array<{ slug: string; company: string }>;
+}) {
+  const url = `${SITE_URL}/aktie/${ticker}`;
+
+  return [
+    {
+      "@context": "https://schema.org",
+      "@type": "BreadcrumbList",
+      itemListElement: [
+        {
+          "@type": "ListItem",
+          position: 1,
+          name: "Utdelningskalender",
+          item: SITE_URL,
+        },
+        {
+          "@type": "ListItem",
+          position: 2,
+          name: `${stock.company} utdelning 2026`,
+          item: url,
+        },
+      ],
+    },
+    {
+      "@context": "https://schema.org",
+      "@type": "WebPage",
+      name: `${stock.company} utdelning 2026`,
+      description: `Aktuell utdelningssida för ${stock.company} med X-datum, utdelningsbelopp, direktavkastning och kommande utdelningar.`,
+      url,
+      inLanguage: "sv-SE",
+      dateModified: stock.lastUpdated,
+      isPartOf: {
+        "@type": "WebSite",
+        name: "Utdelning.nu",
+        url: SITE_URL,
+      },
+      about: {
+        "@type": "Organization",
+        name: stock.company,
+        tickerSymbol: stock.ticker,
+        isin: stock.isin,
+      },
+      mainEntity: {
+        "@type": "ItemList",
+        name: `Kommande utdelningar för ${stock.company}`,
+        numberOfItems: stockEvents.length,
+        itemListElement: stockEvents.map((event, index) => ({
+          "@type": "ListItem",
+          position: index + 1,
+          item: {
+            "@type": "Event",
+            name: `${event.company} utdelning ${formatAmount(event.amount, event.currency)}`,
+            startDate: event.xDate,
+            eventStatus: "https://schema.org/EventScheduled",
+            description: `${event.company} handlas utan rätt till utdelning på X-datum ${formatDate(event.xDate)}. Utdelningsbeloppet är ${formatAmount(event.amount, event.currency)} per aktie.`,
+          },
+        })),
+      },
+      mentions: [
+        `Direktavkastning ${dividendYield}`,
+        ...related.map((item) => item.company),
+      ],
+    },
+  ];
 }
 
 export function generateStaticParams() {
@@ -99,13 +196,25 @@ export async function generateMetadata({
     };
   }
 
-  const title = `${stock.company} utdelning 2026 – X-datum och belopp | Utdelning.nu`;
-  const description = `Se ${stock.company} utdelning 2026. Här hittar du X-datum, utdelningsbelopp, direktavkastning och kommande utdelningar för ${stock.ticker}.`;
+  const stockYield = getStockYield(ticker);
+  const title = `${stock.company} utdelning 2026 - X-datum, belopp och direktavkastning`;
+  const description = stockYield
+    ? `${stock.company} utdelning 2026: se nästa X-datum ${formatDate(stock.xDate)}, utdelningsbelopp ${formatAmount(stock.amount, stock.currency)} och direktavkastning ${formatDividendYield(ticker)}.`
+    : `Se ${stock.company} utdelning 2026 med nästa X-datum ${formatDate(stock.xDate)}, utdelningsbelopp, kommande utdelningar och viktig information för ${stock.ticker}.`;
   const url = `/aktie/${ticker}`;
 
   return {
     title,
     description,
+    keywords: [
+      `${stock.company} utdelning`,
+      `${stock.company} x-datum`,
+      `${stock.ticker} utdelning`,
+      `${stock.company} direktavkastning`,
+      "kommande utdelningar",
+      "utdelningskalender",
+      "x-datum aktier",
+    ],
     alternates: {
       canonical: url,
     },
@@ -122,6 +231,16 @@ export async function generateMetadata({
       title,
       description,
     },
+    robots: {
+      index: true,
+      follow: true,
+      googleBot: {
+        index: true,
+        follow: true,
+        "max-image-preview": "large",
+        "max-snippet": -1,
+      },
+    },
   };
 }
 
@@ -133,43 +252,26 @@ export default async function AktiePage({
   const { ticker } = await params;
   const stockEvents = getStockEvents(ticker);
   const stock = stockEvents[0];
-  const content = stockContent[ticker];
-  const related = relatedStocks[ticker] ?? [];
-  const dividendYield = formatDividendYield(ticker);
-  const faqSchema = {
-  "@context": "https://schema.org",
-  "@type": "FAQPage",
-  mainEntity: [
-    {
-      "@type": "Question",
-      name: `När är X-datum för ${stock.company}?`,
-      acceptedAnswer: {
-        "@type": "Answer",
-        text: `X-datum för ${stock.company} är dagen då aktien handlas utan rätt till kommande utdelning. För att ha rätt till utdelningen behöver aktien normalt ägas innan X-datum.`,
-      },
-    },
-    {
-      "@type": "Question",
-      name: `Hur fungerar utdelningen i ${stock.company}?`,
-      acceptedAnswer: {
-        "@type": "Answer",
-        text: `Utdelningen i ${stock.company} beslutas vanligtvis av bolagsstämman och påverkas av bolagets lönsamhet, kassaflöde och framtida kapitalbehov.`,
-      },
-    },
-    {
-      "@type": "Question",
-      name: `Vad påverkar utdelningen i ${stock.company}?`,
-      acceptedAnswer: {
-        "@type": "Answer",
-        text: `Utdelningsnivån påverkas bland annat av bolagets resultat, kassaflöde, investeringar, skuldsättning och styrelsens kapitalallokering.`,
-      },
-    },
-  ],
-};
 
   if (!stock) {
     notFound();
   }
+
+  const content = stockContent[ticker];
+  const profile = getStockProfile(ticker);
+  const related = getRelatedStockLinks(relatedStocks[ticker] ?? []);
+  const stockYield = getStockYield(ticker);
+  const dividendYield = formatDividendYield(ticker);
+  const annualDividend = stockYield
+    ? formatAmount(stockYield.annualDividend, stock.currency)
+    : "Saknas";
+  const structuredData = buildStructuredData({
+    stock,
+    stockEvents,
+    ticker,
+    dividendYield,
+    related,
+  });
 
   return (
     <main className="min-h-dvh bg-slate-100 pb-20 text-slate-950 lg:pb-0">
@@ -215,13 +317,13 @@ export default async function AktiePage({
             </div>
 
             <div className="mt-5 max-w-3xl space-y-3 text-sm leading-6 text-slate-600 lg:text-base">
-  <p>
-    {content?.description ??
-      `Här hittar du kommande utdelning för ${stock.company}, inklusive X-datum och utdelningsbelopp. Informationen används för att snabbt se när aktien handlas utan rätt till utdelning.`}
-  </p>
+              <p>
+                {content?.description ??
+                  `Här hittar du kommande utdelning för ${stock.company}, inklusive X-datum och utdelningsbelopp. Informationen används för att snabbt se när aktien handlas utan rätt till utdelning.`}
+              </p>
 
-  {content?.dividendComment && <p>{content.dividendComment}</p>}
-</div>
+              {content?.dividendComment && <p>{content.dividendComment}</p>}
+            </div>
           </div>
 
           <div className="grid gap-3 p-4 lg:grid-cols-3 lg:p-8">
@@ -231,22 +333,67 @@ export default async function AktiePage({
           </div>
 
           <div className="border-t border-slate-200 p-4 lg:p-8">
-            <h2 className="text-lg font-black lg:text-2xl">Kommande utdelningar</h2>
+            <h2 className="text-lg font-black lg:text-2xl">
+              Utdelningsöversikt för {stock.company}
+            </h2>
 
-            <div className="mt-4 overflow-hidden rounded-xl border border-slate-200">
+            <dl className="mt-4 grid gap-3 md:grid-cols-2 lg:grid-cols-3">
+              <DetailCard label="Ticker" value={stock.ticker} />
+              <DetailCard label="ISIN" value={stock.isin ?? profile?.isin ?? "Saknas"} />
+              <DetailCard label="Lista" value={profile?.market ?? stock.market} />
+              <DetailCard label="Sektor" value={profile?.sector ?? stock.sector} />
+              <DetailCard label="Årlig utdelning" value={annualDividend} />
+              <DetailCard
+                label="Senast uppdaterad"
+                value={stock.lastUpdated ? formatDate(stock.lastUpdated) : "Saknas"}
+              />
+            </dl>
+
+            <div className="mt-6 rounded-xl bg-slate-50 p-4">
+              <h2 className="text-base font-black">
+                Så tolkar du {stock.company}s utdelning
+              </h2>
+              <p className="mt-2 text-sm leading-6 text-slate-600">
+                {stock.company} har nästa registrerade X-datum {formatDate(stock.xDate)}.
+                Utdelningen är {formatAmount(stock.amount, stock.currency)} per aktie och
+                sidan visar {stockEvents.length} kommande utdelningshändelse
+                {stockEvents.length === 1 ? "" : "r"} i kalendern. För investerare är
+                X-datum den viktigaste dagen att hålla koll på, eftersom aktien handlas
+                utan rätt till den kommande utdelningen från och med detta datum.
+              </p>
+            </div>
+
+            <div className="mt-6 overflow-hidden rounded-xl border border-slate-200">
               <table className="w-full border-collapse text-sm">
+                <caption className="sr-only">
+                  Kommande utdelningar för {stock.company}
+                </caption>
                 <thead className="bg-slate-50 text-left">
                   <tr>
-                    <th className="px-4 py-3 text-xs font-bold uppercase text-slate-500">X-datum</th>
-                    <th className="px-4 py-3 text-right text-xs font-bold uppercase text-slate-500">Utdelning</th>
+                    <th className="px-4 py-3 text-xs font-bold uppercase text-slate-500">
+                      X-datum
+                    </th>
+                    <th className="px-4 py-3 text-xs font-bold uppercase text-slate-500">
+                      Utbetalningsdag
+                    </th>
+                    <th className="px-4 py-3 text-right text-xs font-bold uppercase text-slate-500">
+                      Utdelning
+                    </th>
                   </tr>
                 </thead>
 
                 <tbody>
                   {stockEvents.map((event) => (
                     <tr key={event.id} className="border-t border-slate-100">
-                      <td className="px-4 py-3 font-black text-emerald-700">{formatDate(event.xDate)}</td>
-                      <td className="px-4 py-3 text-right font-black">{formatAmount(event.amount, event.currency)}</td>
+                      <td className="px-4 py-3 font-black text-emerald-700">
+                        {formatDate(event.xDate)}
+                      </td>
+                      <td className="px-4 py-3 text-slate-600">
+                        {formatDate(event.payoutDate)}
+                      </td>
+                      <td className="px-4 py-3 text-right font-black">
+                        {formatAmount(event.amount, event.currency)}
+                      </td>
                     </tr>
                   ))}
                 </tbody>
@@ -261,102 +408,103 @@ export default async function AktiePage({
                 du normalt äga aktien innan X-datum.
               </p>
             </div>
+
             {content?.businessModel && (
-  <div className="mt-6 rounded-xl border border-slate-200 bg-white p-4">
-    <h2 className="text-base font-black">
-      Om {stock.company}
-    </h2>
+              <div className="mt-6 rounded-xl border border-slate-200 bg-white p-4">
+                <h2 className="text-base font-black">Om {stock.company}</h2>
 
-    <p className="mt-2 text-sm leading-6 text-slate-600">
-      {content.businessModel}
-    </p>
-  </div>
-)}
-<div className="mt-6 rounded-xl border border-slate-200 bg-white p-5">
-  <h2 className="text-lg font-black">
-    Vanliga frågor om {stock.company}
-  </h2>
+                <p className="mt-2 text-sm leading-6 text-slate-600">
+                  {content.businessModel}
+                </p>
+              </div>
+            )}
 
-  <div className="mt-4 space-y-5">
-    <div>
-      {related.length > 0 && (
-  <div className="mt-6 rounded-xl border border-slate-200 bg-white p-5">
-    <h2 className="text-lg font-black">
-      Liknande utdelningsaktier
-    </h2>
+            <div className="mt-6 rounded-xl border border-slate-200 bg-white p-5">
+              <h2 className="text-lg font-black">
+                Vanliga frågor om {stock.company}
+              </h2>
 
-    <div className="mt-4 flex flex-wrap gap-3">
-      {related.map((slug) => (
-        <Link
-          key={slug}
-          href={`/aktie/${slug}`}
-          className="rounded-full border border-slate-200 px-4 py-2 text-sm font-semibold transition hover:bg-slate-100"
-        >
-          {slug
-            .split("-")
-            .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
-            .join(" ")}
-        </Link>
-      ))}
-    </div>
-  </div>
-)}
-      <h3 className="font-semibold">
-        När är X-datum för {stock.company}?
-      </h3>
+              <div className="mt-4 space-y-5">
+                <div>
+                  <h3 className="font-semibold">
+                    När är X-datum för {stock.company}?
+                  </h3>
 
-      <p className="mt-1 text-sm leading-6 text-slate-600">
-        X-datum för {stock.company} är dagen då aktien handlas utan rätt
-        till kommande utdelning. För att ha rätt till utdelningen behöver
-        aktien normalt ägas innan X-datum.
-      </p>
-    </div>
+                  <p className="mt-1 text-sm leading-6 text-slate-600">
+                    Nästa X-datum för {stock.company} är {formatDate(stock.xDate)}.
+                    Det är dagen då aktien handlas utan rätt till kommande utdelning.
+                  </p>
+                </div>
 
-    <div>
-      <h3 className="font-semibold">
-        Hur fungerar utdelningen i {stock.company}?
-      </h3>
+                <div>
+                  <h3 className="font-semibold">
+                    Hur stor är utdelningen i {stock.company}?
+                  </h3>
 
-      <p className="mt-1 text-sm leading-6 text-slate-600">
-        Utdelningen i {stock.company} beslutas vanligtvis av bolagsstämman
-        och påverkas av bolagets lönsamhet, kassaflöde och framtida
-        kapitalbehov.
-      </p>
-    </div>
+                  <p className="mt-1 text-sm leading-6 text-slate-600">
+                    Den registrerade utdelningen är {formatAmount(stock.amount, stock.currency)}
+                    per aktie. Om bolaget har flera utdelningstillfällen visas de i
+                    tabellen ovan.
+                  </p>
+                </div>
 
-    <div>
-      <h3 className="font-semibold">
-        Vad påverkar utdelningen i {stock.company}?
-      </h3>
+                <div>
+                  <h3 className="font-semibold">
+                    Vad påverkar utdelningen i {stock.company}?
+                  </h3>
 
-      <p className="mt-1 text-sm leading-6 text-slate-600">
-        Utdelningsnivån påverkas bland annat av bolagets resultat,
-        kassaflöde, investeringar, skuldsättning och styrelsens beslut
-        kring kapitalallokering.
-      </p>
-    </div>
-  </div>
-</div>
+                  <p className="mt-1 text-sm leading-6 text-slate-600">
+                    Utdelningsnivån påverkas bland annat av bolagets resultat,
+                    kassaflöde, investeringar, skuldsättning och styrelsens beslut
+                    kring kapitalallokering.
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {related.length > 0 && (
+              <div className="mt-6 rounded-xl border border-slate-200 bg-white p-5">
+                <h2 className="text-lg font-black">Liknande utdelningsaktier</h2>
+
+                <div className="mt-4 flex flex-wrap gap-3">
+                  {related.map((item) => (
+                    <Link
+                      key={item.slug}
+                      href={`/aktie/${item.slug}`}
+                      className="rounded-full border border-slate-200 px-4 py-2 text-sm font-semibold transition hover:bg-slate-100"
+                    >
+                      {item.company}
+                    </Link>
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
         </div>
       </section>
 
       <MobileBottomNav />
       <script
-  type="application/ld+json"
-  dangerouslySetInnerHTML={{
-    __html: JSON.stringify(faqSchema),
-  }}
-/>
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(structuredData),
+        }}
+      />
     </main>
   );
 }
 
 function StockLogo({ dividend }: { dividend: Dividend }) {
   return (
-    <div className="flex h-14 w-14 shrink-0 items-center justify-center overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm lg:h-16 lg:w-16">
+    <div className="relative flex h-14 w-14 shrink-0 items-center justify-center overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm lg:h-16 lg:w-16">
       {isLogoUrl(dividend.logo) ? (
-        <img src={dividend.logo} alt={`${dividend.company} logotyp`} className="h-full w-full object-contain p-2" />
+        <Image
+          src={dividend.logo}
+          alt={`${dividend.company} logotyp`}
+          fill
+          sizes="64px"
+          className="object-contain p-2"
+        />
       ) : (
         <span className="text-lg font-black text-slate-900">{dividend.logo}</span>
       )}
@@ -364,13 +512,30 @@ function StockLogo({ dividend }: { dividend: Dividend }) {
   );
 }
 
-function InfoCard({ label, value, green = false }: { label: string; value: string; green?: boolean }) {
+function InfoCard({
+  label,
+  value,
+  green = false,
+}: {
+  label: string;
+  value: string;
+  green?: boolean;
+}) {
   return (
     <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
       <p className="text-xs font-bold uppercase text-slate-500">{label}</p>
       <p className={`mt-2 text-lg font-black lg:text-xl ${green ? "text-emerald-700" : "text-slate-950"}`}>
         {value}
       </p>
+    </div>
+  );
+}
+
+function DetailCard({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="rounded-xl border border-slate-200 bg-white p-4">
+      <dt className="text-xs font-bold uppercase text-slate-500">{label}</dt>
+      <dd className="mt-2 break-words text-sm font-black text-slate-950">{value}</dd>
     </div>
   );
 }

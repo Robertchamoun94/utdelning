@@ -1,3 +1,3 @@
 export const dynamic = "force-dynamic";
 
-export { metadata, default } from "../makro/page";
+export { metadata, NewsIndexPage as default } from "../makro/page";

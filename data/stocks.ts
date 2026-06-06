@@ -1,4 +1,4 @@
-import type { CountryCode, MarketSegment } from "@/types/dividend";
+import type { CountryCode } from "@/types/dividend";
 
 export interface Stock {
   id: number;

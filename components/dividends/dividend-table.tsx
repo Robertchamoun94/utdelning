@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import type { Dividend } from "@/types/dividend";
 import { stockYields } from "@/data/stock-yields";
 
@@ -62,13 +63,14 @@ function formatDividendYield(company: string) {
 
 function StockLogo({ dividend }: { dividend: Dividend }) {
   return (
-    <div className="flex h-7 w-7 shrink-0 items-center justify-center overflow-hidden rounded-md border border-slate-200 bg-white shadow-sm transition group-hover:border-emerald-200 group-hover:shadow-md lg:h-9 lg:w-9 lg:rounded-lg">
+    <div className="relative flex h-7 w-7 shrink-0 items-center justify-center overflow-hidden rounded-md border border-slate-200 bg-white shadow-sm transition group-hover:border-emerald-200 group-hover:shadow-md lg:h-9 lg:w-9 lg:rounded-lg">
       {isLogoUrl(dividend.logo) ? (
-        <img
+        <Image
           src={dividend.logo}
           alt={`${dividend.company} logotyp`}
-          className="h-full w-full object-contain p-1"
-          loading="lazy"
+          fill
+          sizes="36px"
+          className="object-contain p-1"
         />
       ) : (
         <span className="text-[10px] font-black text-slate-900 lg:text-xs">
