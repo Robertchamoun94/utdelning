@@ -1,13 +1,6 @@
 import Link from "next/link";
 import Image from "next/image";
-import {
-  ArrowRight,
-  BarChart3,
-  CalendarDays,
-  Clock3,
-  Newspaper,
-  TrendingUp,
-} from "lucide-react";
+import { CalendarDays, Clock3, Newspaper, TrendingUp } from "lucide-react";
 import { MobileBottomNav } from "@/components/layout/mobile-bottom-nav";
 import { Topbar } from "@/components/layout/topbar";
 import { getMakroNewsPosts, type MakroNewsPost } from "@/lib/makro-news";
@@ -31,15 +24,6 @@ export const metadata = {
       "Följ nyheter och analyser om räntor, inflation, likviditet, kreditstress och marknadsläge.",
   },
 };
-
-const topics = [
-  "Räntor",
-  "Inflation",
-  "Likviditet",
-  "Kreditstress",
-  "Konjunktur",
-  "Centralbanker",
-];
 
 export default async function MakroPage() {
   const posts = await getMakroNewsPosts();
@@ -92,8 +76,6 @@ export default async function MakroPage() {
             <aside className="grid content-start gap-4">
               <LatestPanel articles={latestArticles} />
               <MostReadPanel articles={mostReadArticles} />
-              <TopicPanel />
-              <MacroProPanel />
             </aside>
           </div>
         ) : (
@@ -102,8 +84,8 @@ export default async function MakroPage() {
               Inga nyheter publicerade ännu
             </h2>
             <p className="mt-3 text-sm leading-7 text-slate-600">
-              När du publicerar en ny makroartikel i adminpanelen visas den
-              automatiskt högst upp här.
+              När du publicerar en ny nyhet i adminpanelen visas den automatiskt
+              högst upp här.
             </p>
           </section>
         )}
@@ -230,50 +212,6 @@ function MostReadPanel({ articles }: { articles: MakroNewsPost[] }) {
   );
 }
 
-function TopicPanel() {
-  return (
-    <section className="border border-slate-200 bg-white">
-      <SectionHeader title="Bevakning" />
-      <div className="flex flex-wrap gap-2 p-4">
-        {topics.map((topic) => (
-          <span
-            key={topic}
-            className="rounded-sm border border-slate-200 bg-slate-50 px-2.5 py-1 text-xs font-black text-slate-700"
-          >
-            {topic}
-          </span>
-        ))}
-      </div>
-    </section>
-  );
-}
-
-function MacroProPanel() {
-  return (
-    <section className="border border-slate-900 bg-slate-950 p-4 text-white">
-      <div className="mb-3 flex items-center gap-2 text-emerald-400">
-        <BarChart3 size={18} />
-        <h2 className="text-sm font-black uppercase tracking-[0.16em]">
-          Makro Pro
-        </h2>
-      </div>
-
-      <p className="text-sm font-semibold leading-6 text-slate-300">
-        Dashboarden med indikatorer, signaler och veckobedömning finns kvar för
-        dig som vill se hela makromodellen.
-      </p>
-
-      <Link
-        href="/makro/pro"
-        className="mt-4 inline-flex items-center justify-center gap-2 rounded-sm bg-emerald-500 px-4 py-2.5 text-sm font-black text-slate-950 transition hover:bg-emerald-400"
-      >
-        Öppna dashboard
-        <ArrowRight size={17} />
-      </Link>
-    </section>
-  );
-}
-
 function SectionHeader({ title, dark }: { title: string; dark?: boolean }) {
   return (
     <div
@@ -286,7 +224,10 @@ function SectionHeader({ title, dark }: { title: string; dark?: boolean }) {
       <h2 className="text-sm font-black uppercase tracking-[0.14em]">
         {title}
       </h2>
-      <TrendingUp size={16} className={dark ? "text-emerald-400" : "text-emerald-600"} />
+      <TrendingUp
+        size={16}
+        className={dark ? "text-emerald-400" : "text-emerald-600"}
+      />
     </div>
   );
 }

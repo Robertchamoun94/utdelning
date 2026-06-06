@@ -2,7 +2,16 @@
 
 import { useMemo, useState } from "react";
 import Link from "next/link";
-import { ArrowRight, Eye, ImagePlus, Lock, Send } from "lucide-react";
+import {
+  ArrowRight,
+  Eye,
+  ImagePlus,
+  Lock,
+  Pencil,
+  Send,
+  Trash2,
+  X,
+} from "lucide-react";
 import type { MakroNewsPost } from "@/lib/makro-news";
 
 type FormState = {
@@ -32,6 +41,7 @@ const initialForm: FormState = {
 export function MakroNewsAdmin() {
   const [password, setPassword] = useState("");
   const [form, setForm] = useState<FormState>(initialForm);
+  const [editingPostId, setEditingPostId] = useState<string | null>(null);
   const [image, setImage] = useState<File | null>(null);
   const [posts, setPosts] = useState<MakroNewsPost[]>([]);
   const [message, setMessage] = useState("");
@@ -81,12 +91,16 @@ export function MakroNewsAdmin() {
       formData.append(key, value);
     });
 
+    if (editingPostId) {
+      formData.append("id", editingPostId);
+    }
+
     if (image) {
       formData.append("image", image);
     }
 
     const response = await fetch("/api/admin/makro-news", {
-      method: "POST",
+      method: editingPostId ? "PUT" : "POST",
       headers: {
         "x-admin-password": password,
       },
@@ -104,13 +118,92 @@ export function MakroNewsAdmin() {
     }
 
     const data = (await response.json()) as { post: MakroNewsPost };
-    setPosts((currentPosts) => [data.post, ...currentPosts]);
+
+    setPosts((currentPosts) => {
+      if (editingPostId) {
+        return currentPosts.map((post) =>
+          post.id === data.post.id ? data.post : post
+        );
+      }
+
+      return [data.post, ...currentPosts];
+    });
+
+    resetForm();
+    setMessage(
+      editingPostId
+        ? "Nyheten är uppdaterad."
+        : "Nyheten är publicerad och ligger överst på nyhetssidan."
+    );
+  }
+
+  function resetForm() {
     setForm({
       ...initialForm,
       publishedAt: new Date().toISOString().slice(0, 16),
     });
+    setEditingPostId(null);
     setImage(null);
-    setMessage("Nyheten är publicerad och ligger överst på nyhetssidan.");
+  }
+
+  function startEditing(post: MakroNewsPost) {
+    setEditingPostId(post.id);
+    setImage(null);
+    setMessage("Redigerar vald nyhet.");
+    setForm({
+      title: post.title,
+      excerpt: post.excerpt,
+      category: post.category,
+      publishedAt: toDateTimeLocal(post.publishedAt),
+      author: post.author,
+      imageUrl: post.imageUrl,
+      imageAlt: post.imageAlt,
+      content: post.content,
+      status: post.status,
+    });
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }
+
+  async function deletePost(post: MakroNewsPost) {
+    if (!password) return;
+
+    const confirmed = window.confirm(
+      `Vill du ta bort nyheten "${post.title}"? Detta kan inte ångras.`
+    );
+
+    if (!confirmed) return;
+
+    setLoading(true);
+    setMessage("");
+
+    const response = await fetch("/api/admin/makro-news", {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/json",
+        "x-admin-password": password,
+      },
+      body: JSON.stringify({ id: post.id }),
+    });
+
+    setLoading(false);
+
+    if (!response.ok) {
+      const data = (await response.json().catch(() => null)) as {
+        error?: string;
+      } | null;
+      setMessage(data?.error || "Nyheten kunde inte tas bort.");
+      return;
+    }
+
+    setPosts((currentPosts) =>
+      currentPosts.filter((currentPost) => currentPost.id !== post.id)
+    );
+
+    if (editingPostId === post.id) {
+      resetForm();
+    }
+
+    setMessage("Nyheten är borttagen.");
   }
 
   async function handleImageChange(file: File | null) {
@@ -142,7 +235,7 @@ export function MakroNewsAdmin() {
   }
 
   return (
-    <div className="grid gap-6 lg:grid-cols-[1fr_380px]">
+    <div className="grid gap-6 lg:grid-cols-[1fr_420px]">
       <form
         onSubmit={submitPost}
         className="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm lg:p-8"
@@ -150,7 +243,7 @@ export function MakroNewsAdmin() {
         <div className="mb-6 flex items-center gap-2 text-emerald-600">
           <Send size={18} />
           <h1 className="text-2xl font-black tracking-tight">
-            Skapa nyhet
+            {editingPostId ? "Redigera nyhet" : "Skapa nyhet"}
           </h1>
         </div>
 
@@ -198,7 +291,7 @@ export function MakroNewsAdmin() {
             />
           </label>
 
-          <div className="grid gap-4 md:grid-cols-2">
+          <div className="grid gap-4 md:grid-cols-3">
             <label className="grid gap-2 text-sm font-bold text-slate-700">
               Kategori
               <input
@@ -227,6 +320,24 @@ export function MakroNewsAdmin() {
                 className="h-11 rounded-xl border border-slate-200 bg-white px-3 text-sm outline-none focus:border-emerald-500"
               />
             </label>
+
+            <label className="grid gap-2 text-sm font-bold text-slate-700">
+              Status
+              <select
+                value={form.status}
+                onChange={(event) =>
+                  setForm((current) => ({
+                    ...current,
+                    status:
+                      event.target.value === "draft" ? "draft" : "published",
+                  }))
+                }
+                className="h-11 rounded-xl border border-slate-200 bg-white px-3 text-sm outline-none focus:border-emerald-500"
+              >
+                <option value="published">Publicerad</option>
+                <option value="draft">Utkast</option>
+              </select>
+            </label>
           </div>
 
           <label className="grid gap-2 text-sm font-bold text-slate-700">
@@ -240,12 +351,12 @@ export function MakroNewsAdmin() {
                 }))
               }
               className="h-11 rounded-xl border border-slate-200 bg-white px-3 text-sm outline-none focus:border-emerald-500"
-              placeholder="/uploads/makro/bild.jpg"
+              placeholder="/api/news-image/makro/images/bild.jpg"
             />
           </label>
 
           <label className="grid gap-2 text-sm font-bold text-slate-700">
-            Ladda upp bild
+            Ladda upp ny bild
             <div className="flex min-h-24 items-center gap-3 rounded-xl border border-dashed border-slate-300 bg-slate-50 p-4">
               <ImagePlus className="shrink-0 text-slate-400" size={22} />
               <input
@@ -309,9 +420,26 @@ export function MakroNewsAdmin() {
             disabled={!canPublish || loading || imageProcessing}
             className="inline-flex items-center justify-center gap-2 rounded-xl bg-emerald-500 px-5 py-3 text-sm font-black text-slate-950 transition hover:bg-emerald-400 disabled:cursor-not-allowed disabled:bg-slate-300 disabled:text-slate-500"
           >
-            {loading ? "Publicerar..." : "Publicera nyhet"}
+            {loading
+              ? editingPostId
+                ? "Sparar..."
+                : "Publicerar..."
+              : editingPostId
+                ? "Spara ändringar"
+                : "Publicera nyhet"}
             <ArrowRight size={18} />
           </button>
+
+          {editingPostId && (
+            <button
+              type="button"
+              onClick={resetForm}
+              className="inline-flex items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white px-5 py-3 text-sm font-black text-slate-700 transition hover:border-slate-300 hover:bg-slate-50"
+            >
+              Avbryt
+              <X size={18} />
+            </button>
+          )}
 
           {message && (
             <p className="text-sm font-semibold text-slate-600">{message}</p>
@@ -335,21 +463,59 @@ export function MakroNewsAdmin() {
           )}
 
           {posts.map((post) => (
-            <Link
+            <article
               key={post.id}
-              href={`/nyheter/${post.slug}`}
-              className="rounded-2xl border border-slate-200 p-4 transition hover:border-emerald-400"
+              className="rounded-2xl border border-slate-200 p-4"
             >
-              <p className="text-xs font-black uppercase tracking-[0.14em] text-emerald-600">
-                {post.category}
-              </p>
-              <h3 className="mt-2 text-sm font-black leading-5">
-                {post.title}
-              </h3>
+              <div className="flex items-start justify-between gap-3">
+                <div>
+                  <p className="text-xs font-black uppercase tracking-[0.14em] text-emerald-600">
+                    {post.category}
+                  </p>
+                  <h3 className="mt-2 text-sm font-black leading-5">
+                    {post.title}
+                  </h3>
+                </div>
+                <span
+                  className={`rounded-full px-2 py-1 text-[10px] font-black uppercase ${
+                    post.status === "published"
+                      ? "bg-emerald-50 text-emerald-700"
+                      : "bg-slate-100 text-slate-500"
+                  }`}
+                >
+                  {post.status === "published" ? "Publicerad" : "Utkast"}
+                </span>
+              </div>
+
               <p className="mt-2 text-xs font-semibold text-slate-500">
                 {new Date(post.publishedAt).toLocaleDateString("sv-SE")}
               </p>
-            </Link>
+
+              <div className="mt-4 grid grid-cols-3 gap-2">
+                <Link
+                  href={`/nyheter/${post.slug}`}
+                  className="inline-flex h-10 items-center justify-center rounded-xl border border-slate-200 text-xs font-black text-slate-700 transition hover:border-emerald-400"
+                >
+                  Visa
+                </Link>
+                <button
+                  type="button"
+                  onClick={() => startEditing(post)}
+                  className="inline-flex h-10 items-center justify-center gap-1 rounded-xl border border-slate-200 text-xs font-black text-slate-700 transition hover:border-emerald-400"
+                >
+                  <Pencil size={14} />
+                  Ändra
+                </button>
+                <button
+                  type="button"
+                  onClick={() => void deletePost(post)}
+                  className="inline-flex h-10 items-center justify-center gap-1 rounded-xl border border-red-100 bg-red-50 text-xs font-black text-red-700 transition hover:border-red-200"
+                >
+                  <Trash2 size={14} />
+                  Ta bort
+                </button>
+              </div>
+            </article>
           ))}
         </div>
       </aside>
@@ -401,6 +567,13 @@ async function prepareImageForUpload(file: File) {
   return new File([blob], `${stripExtension(file.name)}.jpg`, {
     type: "image/jpeg",
   });
+}
+
+function toDateTimeLocal(value: string) {
+  const date = new Date(value);
+  const offset = date.getTimezoneOffset();
+  const localDate = new Date(date.getTime() - offset * 60_000);
+  return localDate.toISOString().slice(0, 16);
 }
 
 function stripExtension(fileName: string) {

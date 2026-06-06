@@ -84,6 +84,53 @@ export async function createMakroNewsPost(input: MakroNewsInput) {
   return post;
 }
 
+export async function updateMakroNewsPost(
+  id: string,
+  input: MakroNewsInput
+) {
+  const posts = await readNewsFile();
+  const postIndex = posts.findIndex((post) => post.id === id);
+
+  if (postIndex === -1) {
+    return null;
+  }
+
+  const existingPost = posts[postIndex];
+  const publishedAt = input.publishedAt
+    ? new Date(input.publishedAt).toISOString()
+    : existingPost.publishedAt;
+
+  const updatedPost: MakroNewsPost = {
+    ...existingPost,
+    title: cleanText(input.title),
+    excerpt: cleanText(input.excerpt),
+    category: cleanText(input.category),
+    publishedAt,
+    updatedAt: new Date().toISOString(),
+    author: cleanText(input.author || "Utdelning.nu"),
+    imageUrl: input.imageUrl?.trim() || "",
+    imageAlt: cleanText(input.imageAlt || input.title),
+    content: input.content.trim(),
+    status: input.status || "published",
+  };
+
+  posts[postIndex] = updatedPost;
+  await writeNewsFile(posts);
+  return updatedPost;
+}
+
+export async function deleteMakroNewsPost(id: string) {
+  const posts = await readNewsFile();
+  const nextPosts = posts.filter((post) => post.id !== id);
+
+  if (nextPosts.length === posts.length) {
+    return false;
+  }
+
+  await writeNewsFile(nextPosts);
+  return true;
+}
+
 export async function saveMakroNewsImage(file: File, slugSource: string) {
   if (!file.size) return "";
 

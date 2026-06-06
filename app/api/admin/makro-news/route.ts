@@ -1,8 +1,10 @@
 import {
   createMakroNewsPost,
+  deleteMakroNewsPost,
   getMakroNewsPosts,
   hasPersistentMakroNewsStorage,
   saveMakroNewsImage,
+  updateMakroNewsPost,
   type MakroNewsStatus,
 } from "@/lib/makro-news";
 
@@ -85,6 +87,94 @@ export async function POST(request: Request) {
       { status: 500 }
     );
   }
+}
+
+export async function PUT(request: Request) {
+  const unauthorized = authorize(request);
+  if (unauthorized) return unauthorized;
+
+  const formData = await request.formData();
+  const id = getFormValue(formData, "id");
+  const title = getFormValue(formData, "title");
+  const excerpt = getFormValue(formData, "excerpt");
+  const category = getFormValue(formData, "category");
+  const publishedAt = getFormValue(formData, "publishedAt");
+  const author = getFormValue(formData, "author");
+  const imageAlt = getFormValue(formData, "imageAlt");
+  const content = getFormValue(formData, "content");
+  const status = getFormValue(formData, "status") as MakroNewsStatus;
+  let imageUrl = getFormValue(formData, "imageUrl");
+  const image = formData.get("image");
+
+  if (!id || !title || !excerpt || !category || !content) {
+    return Response.json(
+      { error: "ID, titel, ingress, kategori och innehåll krävs." },
+      { status: 400 }
+    );
+  }
+
+  try {
+    if (image instanceof File && image.size > 0) {
+      if (image.size > 4_000_000) {
+        return Response.json(
+          { error: "Bilden är för stor. Max 4 MB efter komprimering." },
+          { status: 400 }
+        );
+      }
+
+      imageUrl = await saveMakroNewsImage(image, title);
+    }
+
+    const post = await updateMakroNewsPost(id, {
+      title,
+      excerpt,
+      category,
+      publishedAt,
+      author,
+      imageUrl,
+      imageAlt,
+      content,
+      status: status === "draft" ? "draft" : "published",
+    });
+
+    if (!post) {
+      return Response.json({ error: "Nyheten hittades inte." }, { status: 404 });
+    }
+
+    return Response.json({ post });
+  } catch (error) {
+    return Response.json(
+      {
+        error:
+          error instanceof Error
+            ? error.message
+            : "Nyheten kunde inte uppdateras.",
+      },
+      { status: 500 }
+    );
+  }
+}
+
+export async function DELETE(request: Request) {
+  const unauthorized = authorize(request);
+  if (unauthorized) return unauthorized;
+
+  const data = (await request.json().catch(() => null)) as {
+    id?: string;
+  } | null;
+  const id = data?.id?.trim();
+
+  if (!id) {
+    return Response.json({ error: "ID krävs." }, { status: 400 });
+  }
+
+  const deleted = await deleteMakroNewsPost(id);
+
+  if (!deleted) {
+    return Response.json({ error: "Nyheten hittades inte." }, { status: 404 });
+  }
+
+  return Response.json({ ok: true });
 }
 
 function authorize(request: Request) {
