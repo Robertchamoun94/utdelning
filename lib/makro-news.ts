@@ -34,6 +34,7 @@ export type MakroNewsInput = {
 const NEWS_FILE = path.join(process.cwd(), "data", "makro-news.json");
 const UPLOAD_DIR = path.join(process.cwd(), "public", "uploads", "makro");
 const BLOB_NEWS_PATH = "makro/posts.json";
+const BLOB_IMAGE_PATH = "makro/images";
 const SITE_URL = "https://utdelning.nu";
 
 export async function getMakroNewsPosts(options?: {
@@ -95,26 +96,18 @@ export async function saveMakroNewsImage(file: File, slugSource: string) {
   const fileName = `${slug}-${Date.now()}.${extension}`;
 
   if (hasBlobStorage()) {
-    try {
-      const blob = await put(`makro/images/${fileName}`, file, {
-        access: "public",
-        addRandomSuffix: false,
-        allowOverwrite: false,
-        contentType: file.type,
-        cacheControlMaxAge: 31536000,
-        token: getPublicImageBlobToken(),
-      });
+    const pathname = `${BLOB_IMAGE_PATH}/${fileName}`;
 
-      return blob.url;
-    } catch (error) {
-      if (isPrivateStoreAccessError(error)) {
-        throw new Error(
-          "Nyhetsbilden kunde inte laddas upp eftersom Blob-token pekar pÃ¥ en private Blob Store. Skapa en separat public Blob Store i Vercel och lÃ¤gg dess token som BLOB_PUBLIC_READ_WRITE_TOKEN."
-        );
-      }
+    await put(pathname, file, {
+      access: "private",
+      addRandomSuffix: false,
+      allowOverwrite: false,
+      contentType: file.type,
+      cacheControlMaxAge: 31536000,
+      token: process.env.BLOB_READ_WRITE_TOKEN,
+    });
 
-      throw error;
-    }
+    return `/api/news-image/${pathname}`;
   }
 
   await fs.mkdir(UPLOAD_DIR, { recursive: true });
@@ -251,20 +244,6 @@ async function readNewsBlob() {
 
 function hasBlobStorage() {
   return Boolean(process.env.BLOB_READ_WRITE_TOKEN);
-}
-
-function getPublicImageBlobToken() {
-  return (
-    process.env.BLOB_PUBLIC_READ_WRITE_TOKEN ||
-    process.env.BLOB_READ_WRITE_TOKEN
-  );
-}
-
-function isPrivateStoreAccessError(error: unknown) {
-  return (
-    error instanceof Error &&
-    /Cannot use public access on a private store/i.test(error.message)
-  );
 }
 
 function getSafeImageExtension(file: File) {
