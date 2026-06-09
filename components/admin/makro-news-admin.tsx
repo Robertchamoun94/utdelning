@@ -462,6 +462,7 @@ export function MakroNewsAdmin() {
 
 Tips:
 Skriv rubriker på egna rader.
+Vill du tvinga en rubrik, skriv ## före rubriken.
 Skriv nya stycken på nya rader.
 Skriv Sammanfattning: följt av rader som X-datum / 9 juni 2026 för en faktaruta.`}
             />

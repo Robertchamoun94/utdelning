@@ -164,5 +164,9 @@ function isLikelyHeading(line: string, nextLine?: string) {
   if (line.includes(",")) return false;
   if (line.split(/\s+/).length > 9) return false;
 
-  return HEADING_STARTS.some((start) => normalized.startsWith(start));
+  if (HEADING_STARTS.some((start) => normalized.startsWith(start))) {
+    return true;
+  }
+
+  return nextLine.length > 80 || /[.!?]"?$/.test(nextLine);
 }
