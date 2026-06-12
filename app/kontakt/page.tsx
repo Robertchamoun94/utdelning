@@ -5,6 +5,9 @@ import { Topbar } from "@/components/layout/topbar";
 
 export const metadata = {
   title: "Kontakt | Utdelning.nu",
+  alternates: {
+    canonical: "/kontakt",
+  },
   description:
     "Kontakta Utdelning.nu vid frågor om utdelningar, Makro Pro eller webbplatsen.",
 };

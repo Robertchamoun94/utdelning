@@ -5,6 +5,9 @@ import { Topbar } from "@/components/layout/topbar";
 
 export const metadata = {
   title: "Integritetspolicy och cookies | Utdelning.nu",
+  alternates: {
+    canonical: "/integritetspolicy",
+  },
   description:
     "Läs om hur Utdelning.nu hanterar personuppgifter, cookies, analys och externa tjänster.",
 };
