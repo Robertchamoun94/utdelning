@@ -4,6 +4,8 @@ import { getMakroNewsPosts } from "@/lib/makro-news";
 
 const SITE_URL = "https://www.utdelning.nu";
 
+export const dynamic = "force-dynamic";
+
 function createStockSlug(value: string) {
   return value
     .toLowerCase()
@@ -27,10 +29,13 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: 0.8,
   }));
   const makroPosts = await getMakroNewsPosts();
+  const latestMakroUpdate = makroPosts[0]?.updatedAt
+    ? new Date(makroPosts[0].updatedAt)
+    : new Date();
   const makroNewsPages = makroPosts.map((post) => ({
     url: `${SITE_URL}/nyheter/${post.slug}`,
     lastModified: new Date(post.updatedAt),
-    changeFrequency: "weekly" as const,
+    changeFrequency: "daily" as const,
     priority: 0.75,
   }));
 
@@ -43,7 +48,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     },
     {
       url: `${SITE_URL}/nyheter`,
-      lastModified: new Date(),
+      lastModified: latestMakroUpdate,
       changeFrequency: "daily",
       priority: 0.9,
     },
@@ -58,6 +63,12 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       lastModified: new Date(),
       changeFrequency: "yearly",
       priority: 0.3,
+    },
+    {
+      url: `${SITE_URL}/integritetspolicy`,
+      lastModified: new Date(),
+      changeFrequency: "yearly",
+      priority: 0.2,
     },
     ...makroNewsPages,
     ...stockPages,
