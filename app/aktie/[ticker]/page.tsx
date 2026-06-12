@@ -152,11 +152,26 @@ function buildStructuredData({
           "@type": "ListItem",
           position: index + 1,
           item: {
-            "@type": "Event",
+            "@type": "Thing",
             name: `${event.company} utdelning ${formatAmount(event.amount, event.currency)}`,
-            startDate: event.xDate,
-            eventStatus: "https://schema.org/EventScheduled",
             description: `${event.company} handlas utan rätt till utdelning på X-datum ${formatDate(event.xDate)}. Utdelningsbeloppet är ${formatAmount(event.amount, event.currency)} per aktie.`,
+            additionalProperty: [
+              {
+                "@type": "PropertyValue",
+                name: "X-datum",
+                value: event.xDate,
+              },
+              {
+                "@type": "PropertyValue",
+                name: "Utbetalningsdag",
+                value: event.payoutDate,
+              },
+              {
+                "@type": "PropertyValue",
+                name: "Utdelning per aktie",
+                value: formatAmount(event.amount, event.currency),
+              },
+            ],
           },
         })),
       },
